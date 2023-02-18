@@ -9,4 +9,12 @@ app.use(cors())
 app.use(bodyParser.json());
 app.use(express.urlencoded({extended:true}));
 app.use(express.json());
+
+
+const adminRoutes = require("./routes/adminRoutes");
+
+
+app.use("/admin", adminRoutes);
+
+
 app.listen(8000,()=> console.log("Back end is running at port 8000"));
