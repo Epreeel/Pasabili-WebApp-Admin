@@ -8,7 +8,7 @@ var moment = require('moment');
 const {generateAdminAccessToken} = require('../helpers/generateAdminAccessToken');
 
 exports.login = async(req, res) => {
-    let data = await user.model.findOne({
+    let data = await admin.model.findOne({
         where:{
             email:req.body.email,
             status:true
