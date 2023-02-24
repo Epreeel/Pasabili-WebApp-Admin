@@ -41,9 +41,6 @@ const LoginPage = () => {
     }
     const [errors, setErrors] = useState({})
 
-    const onSubmit = data => {
-        console.log(data);
-    }
     const [loading, setLoading] = useState(false);
 
 
@@ -59,7 +56,7 @@ const LoginPage = () => {
         event.preventDefault();
         setErrors(AdminLoginValidation(admin));
         if (Object.keys(AdminLoginValidation(admin)).length === 0) {
-            Axios.post('http://localhost:8000/admin/login', {
+            Axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/login`, {
                 email: admin.email,
                 password: admin.password
             }).then((res) => {
@@ -100,7 +97,7 @@ const LoginPage = () => {
                     </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
                         <TextField
-                            color='success'
+                            color='primary'
                             margin="normal"
                             required
                             fullWidth
@@ -115,7 +112,7 @@ const LoginPage = () => {
                             autoFocus
                         />
                         <TextField
-                            color='success'
+                            color='primary'
                             margin="normal"
                             required
                             fullWidth
@@ -130,6 +127,7 @@ const LoginPage = () => {
                             autoComplete="current-password"
                         />
                         <Button
+                            disabled={loading || (!admin.email && !admin.password)}
                             type="submit"
                             fullWidth
                             variant="contained"
