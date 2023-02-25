@@ -55,7 +55,7 @@ export default function ViewEmployeeModal(props) {
       <BootstrapDialogTitle
         onClose={props.handleCloseModal}
       >
-        View Employee Details
+       {props.title}
       </BootstrapDialogTitle>
       <DialogContent dividers >
         <div className="container text-center m-auto align-content-center align-middle">

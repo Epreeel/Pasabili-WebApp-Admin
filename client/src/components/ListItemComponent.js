@@ -34,7 +34,7 @@ export const mainListItems = (
       <ListItemText primary={<Typography style={{ color: 'white' }}>Customers</Typography>} />
     </ListItem>
 
-    <ListItem component="a" href="/reports">
+    <ListItem component="a" href="/transactions">
       <ListItemIcon style={{ color: 'white' }}>
         <ReceiptIcon />
       </ListItemIcon>
