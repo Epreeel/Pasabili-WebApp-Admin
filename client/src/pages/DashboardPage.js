@@ -6,6 +6,11 @@ import { Paper,Grid,Button} from '@mui/material';
         
 import DashboardCard from '../components/dashboard/DashboardCard'
 import PersonIcon from "@mui/icons-material/Person";
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import PeopleIcon from '@mui/icons-material/People';
+import NoAccountsIcon from '@mui/icons-material/NoAccounts';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import PersonPinIcon from '@mui/icons-material/PersonPin';
 import { useNavigate } from 'react-router-dom';
 
 const DashboardPage = () => {
@@ -28,7 +33,11 @@ const DashboardPage = () => {
   // const {drivers,trucks,dumpsters,chartData,collections} = data;
 
   const dashcards = [
-    {id:1, title: "Active Itinerants", count:5, icon:<PersonIcon style={{float:'right'}} fontSize="large"/>},
+    {id:1, title: "New Users", count:5, icon:<PeopleIcon style={{float:'right'}} fontSize="large"/>},
+    {id:2, title: "Banned Users", count:5, icon:<NoAccountsIcon style={{float:'right'}} fontSize="large"/>},
+    {id:3, title: "Itinerants", count:5, icon:<PersonPinIcon style={{float:'right'}} fontSize="large"/>},
+    {id:4, title: "Verified Users", count:6, icon:<VerifiedUserIcon style={{float:'right'}} fontSize="large"/>},
+    {id:5, title: "Transactions", count:25, icon:<ReceiptIcon style={{float:'right'}} fontSize="large"/>},
 ]
   
   return (

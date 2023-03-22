@@ -1,4 +1,3 @@
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
@@ -8,14 +7,16 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from "react-hook-form";
 import AdminLoginValidation from '../validations/AdminLoginValidation';
 import Axios from "axios";
 import Alert from '@mui/material/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import Cookies from 'js-cookie';
+import Firebase from '../components/helpers/Firebase';
 
+const auth = Firebase.auth();
 function Copyright(props) {
     return (
         <Typography variant="body2" color="text.dark" align="center" {...props}>
@@ -31,7 +32,8 @@ function Copyright(props) {
 
 const theme = createTheme();
 const LoginPage = () => {
-    const { register, watch, handleSubmit } = useForm();
+    const [open, setOpen] = useState(false);
+    const { register, handleSubmit } = useForm();
     const [admin, setAdmin] = useState({
         email: "",
         password: ""
@@ -50,9 +52,40 @@ const LoginPage = () => {
         severity: null,
     });
     const navigate = useNavigate();
-
+    useEffect(() => {
+        if (Cookies.get('user_id')) {
+            navigate("/dashboard");
+        }
+    }, [navigate]);
+    const handleCreateFirebase = async (email, password) => {
+        await auth.createUserWithEmailAndPassword(email, password);
+        setOpen(true);
+    }
+    const handleFirebase = async (accessToken) => {
+        console.log(admin.email);
+        console.log(admin.password);
+        await auth.signInWithEmailAndPassword(admin.email, admin.password)
+            .then(function () {
+                setLoading(false);
+                if (auth.currentUser.emailVerified) {
+                    console.log("HI");
+                    Cookies.set('user_id', accessToken, { expires: 1 });
+                    navigate("/dashboard");
+                } else {
+                    console.log("HELLO");
+                    setOpen(true);
+                }
+            })
+            .catch(function (err) {
+                setLoading(false);
+                if (err.code == "auth/user-not-found") {
+                    handleCreateFirebase(admin.email, admin.password);
+                } else {
+                    setAlert({ visibility: true, message: err.message, severity: "error" });
+                }
+            });
+    }
     const handleFormSubmit = (event) => {
-        var mins = new Date(new Date().getTime() + 15 * 60 * 1000);
         event.preventDefault();
         setErrors(AdminLoginValidation(admin));
         if (Object.keys(AdminLoginValidation(admin)).length === 0) {
@@ -61,14 +94,14 @@ const LoginPage = () => {
                 password: admin.password
             }).then((res) => {
                 if (res.data.success) {
-                    setLoading(true);
-                    Cookies.set('admin_id', res.data.accessToken, { expires: mins });
-                    navigate("/dashboard");
-
+                    handleFirebase(res.data.accessToken);
                 } else {
+                    setLoading(false);
                     setAlert({ visibility: true, message: res.data.message, severity: "error" });
                 }
             })
+        } else {
+            setLoading(false);
         }
 
 
