@@ -6,6 +6,7 @@ import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
 import ReactivateModal from '../common/modals/ReactivateModal';
+import { GENDERTYPE } from '../../constants/common';
 
 const theme = createTheme({
     components: {
@@ -26,7 +27,6 @@ const theme = createTheme({
 const InactiveAccountsComponent = () => {
     const { queryResult } = useEmployeePageContext();
     const inactives = queryResult.data.data.inactives;
-    console.log(queryResult);
     const [data, setData] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openDeleteModal, setDeleteModal] = useState(false);
@@ -45,21 +45,16 @@ const InactiveAccountsComponent = () => {
     useEffect(() => {
         var temp = [];
         inactives && inactives.map((item) => {
-            const address = item.admin_id ? (
-                `${item.adminAddress.street ? item.adminAddress.street : ""} ${item.adminAddress.barangay ? item.adminAddress.barangay : ""} ${item.adminAddress.town ? item.adminAddress.town : ""} ${item.adminAddress.postal_code ? item.adminAddress.postal_code : ""}`
-              ) : (
-                `${item.userAddress.street ? item.userAddress.street : ""} ${item.userAddress.barangay ? item.userAddress.barangay : ""} ${item.userAddress.town ? item.userAddress.town : ""} ${item.userAddress.postal_code ? item.userAddress.postal_code : ""}`
-              );
-            temp.push([item.fname && item.fname,
-            item.lname && item.lname,
+            temp.push([item.firstname && item.firstname,
+            item.lastname && item.lastname,
             item.email && item.email,
             item.contact_no && item.contact_no,
-            address,
-            item.birthday && moment().diff(item.birthday, 'years'),
-            item.gender && item.gender,
+            item.address && item.address,
+            item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
+            item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
             item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
-            item.status && item.status===true?'Active':'Inactive',
-            item.admin_id && item.admin_id ? 'Admin' : 'Itinerant',]
+            item.status && item.status === true ? 'Active' : 'Inactive',
+            item.admin_id && item.admin_id ? 'Admin' : 'Itinerant']
             );
         })
         setData(temp);
@@ -194,8 +189,8 @@ const InactiveAccountsComponent = () => {
     };
     return (
         <div>
-            <ViewEmployeeModal data={rowData} title =" View Employee Details" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />
-            <ReactivateModal data={rowData} title="Are you sure you want to Reactivate this Employee Record?" module = {"employees"} openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
+            <ViewEmployeeModal data={rowData} title=" View Employee Details" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />
+            <ReactivateModal data={rowData} title="Are you sure you want to Reactivate this Employee Record?" module={"employees"} openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
             <ThemeProvider theme={theme}>
                 <MUIDataTable
                     title={"Inactive Account List"}

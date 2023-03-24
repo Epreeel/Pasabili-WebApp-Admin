@@ -7,6 +7,8 @@ import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
 import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
 import { ButtonGroup} from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { GENDERTYPE } from '../../constants/common';
+
 
 const theme = createTheme({
   components: {
@@ -34,13 +36,13 @@ const AdminsComponent = () => {
   useEffect(() => {
     var temp = [];
     admins && admins.map((item) => {
-      temp.push([item.fname && item.fname,
-      item.lname && item.lname,
+      temp.push([item.firstname && item.firstname,
+      item.lastname && item.lastname,
       item.email && item.email,
       item.contact_no && item.contact_no,
-      `${item.adminAddress.street ? item.adminAddress.street : ""} ${item.adminAddress.barangay ? item.adminAddress.barangay : ""} ${item.adminAddress.town ? item.adminAddress.town : ""} ${item.adminAddress.postal_code ? item.adminAddress.postal_code : ""}`,
-      item.birthday && moment().diff(item.birthday, 'years'),
-      item.gender && item.gender,
+      item.address && item.address,
+      item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
+      item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
       item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
       item.status && item.status === true ? 'Active' : 'Inactive',
       item.image
@@ -188,7 +190,7 @@ const AdminsComponent = () => {
   return (
     <div>
       <div className='mb-3'>
-        <button className='btn btn-success' onClick={() => setOpenAddModal(true)}><i className="fa fa-plus" aria-hidden="true"></i> Add New Employee</button>
+        <button className='btn btn-success' onClick={() => setOpenAddModal(true)}><i className="fa fa-plus" aria-hidden="true"></i> Add New Admin</button>
       </div>
       <AddNewEmployeeModal
         openModal={openAddModal}

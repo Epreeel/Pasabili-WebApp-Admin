@@ -62,13 +62,14 @@ export default function ReactivateModal(props) {
       .string()
       .required('Password is required'),
   })
+  
   const handleFormSubmit = async () => {
-  const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/${props.module}/activate`, {
+    const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/${props.module}/activate`, {
       email: props.data[2],
       password: values.password,
       accessToken: Cookies.get("admin_id")
     })
-    if(res){
+    if (res) {
       setLoading(false);
       if (res.data.success) {
         refetch();
@@ -78,7 +79,7 @@ export default function ReactivateModal(props) {
         enqueueSnackbar(res.data.message, { variant: 'error' });
       }
     }
-    
+
   }
   const { handleChange, handleSubmit, handleBlur, values, errors, isValid, touched, setFieldValue } = useFormik({
     initialValues: { password: '' },

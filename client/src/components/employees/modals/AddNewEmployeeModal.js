@@ -17,14 +17,16 @@ import MenuItem from "@mui/material/MenuItem";
 import { useFormik } from 'formik';
 import axios from "axios";
 import * as yup from 'yup'
-// import Firebase from '../../helpers/Firebase';
 import { capitalizeWords } from '../../helpers/TextFormat';
 import { useEmployeePageContext } from '../../../pages/EmployeesPage';
 import { useSnackbar } from 'notistack'
 import { CircularProgress } from '@mui/material';
 
-// const auth = Firebase.auth();
+
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialog-paper': {
+    width: '500px',
+  },
   '& .MuiDialogContent-root': {
     padding: theme.spacing(2),
   },
@@ -61,6 +63,11 @@ BootstrapDialogTitle.propTypes = {
   children: PropTypes.node,
   onClose: PropTypes.func.isRequired,
 };
+const isAtLeast18YearsAgo = (date) => {
+  const today = new Date();
+  const minDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
+  return date <= minDate;
+};
 
 export default function AddNewEmployeeModal(props) {
   const { enqueueSnackbar } = useSnackbar();
@@ -68,73 +75,48 @@ export default function AddNewEmployeeModal(props) {
   const [loading, setLoading] = React.useState(false);
   const digitsOnly = (value) => /^\d+$/.test(value)
   const employeeRegisterValidationSchema = yup.object().shape({
-    fname: yup
+    firstname: yup
       .string()
       .required('First Name is required'),
-    lname: yup
+    lastname: yup
       .string()
       .required('Last Name is required'),
     email: yup
       .string()
       .email("Please enter valid email")
       .required('Email is required'),
-    purok: yup
+    address: yup
       .string()
-      .required('Purok is required'),
-    street: yup
-      .string()
-      .required('Street is required'),
-    barangay: yup
-      .string()
-      .required('Barangay is required'),
-    town: yup
-      .string()
-      .required('Town is required'),
-    postal_code: yup
-      .string()
-      .required('Postal Code is required')
-      .test('Digits only', 'The field should be digits only', digitsOnly)
-      .min(4, `Must be 4 digits`)
-      .max(4, `Must be 4 digits`),
+      .required('Address is required'),
     gender: yup
       .string()
       .required('Gender is required'),
-    contact: yup
+    birthday: yup
+      .date()
+      .test('is-at-least-18-years-ago', 'You must be at least 18 years old', (value) => isAtLeast18YearsAgo(value))
+      .required('Birthday is required'),
+    contact_no: yup
       .string()
-      .required('Contact is required')
+      .required('Contact Number is required')
       .test('Digits only', 'The field should be digits only', digitsOnly)
       .min(11, `Must be 11 digits starting with 09`)
       .max(11, `Must be 11 digits starting with 09`),
   })
 
-  //   const handleFirebase =async (values,resetForm) =>{
-  //     await auth.createUserWithEmailAndPassword(values.email, "p@ssw0rd")
-  //     .then(function() {
-  //         auth.currentUser.sendEmailVerification();
-  //     })
-  //     .catch(function(error) {
-  //         // setError(error.message);
-  //         enqueueSnackbar(error.message, { variant:'error' });
-  //     });
-  //   }
   const handleFormSubmit = async (values, { resetForm }) => {
     setLoading(true);
     axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/employees/add`, {
       email: values.email,
-      contact: values.contact,
-      fname: capitalizeWords(values.fname),
-      lname: capitalizeWords(values.lname),
-      purok: capitalizeWords(values.purok),
-      street: capitalizeWords(values.street),
-      barangay: capitalizeWords(values.barangay),
-      town: capitalizeWords(values.town),
-      postal_code: values.postal_code,
+      contact_no: values.contact_no,
+      firstname: capitalizeWords(values.firstname),
+      lastname: capitalizeWords(values.lastname),
+      address: capitalizeWords(values.address),
+      birthday: values.birthday,
       gender: values.gender,
     })
       .then(res => {
         setLoading(false);
         if (res.data.success) {
-          // handleFirebase(values,resetForm);
           refetch();
           enqueueSnackbar(res.data.message, { variant: 'success' });
         } else {
@@ -143,17 +125,17 @@ export default function AddNewEmployeeModal(props) {
       })
   }
   const { handleChange, handleSubmit, handleBlur, values, errors, isValid, touched, setErrors } = useFormik({
-    initialValues: { fname: '', lname: '', email: '', contact: '', purok: '', street: '', barangay: '', town: '', postal_code: '', gender: ''},
+    initialValues: { firstname: '', lastname: '', email: '', contact_no: '', address: '', birthday: '', gender: '' },
     enableReinitialize: true,
-    initialErrors : false,
+    initialErrors: false,
     validationSchema: employeeRegisterValidationSchema,
     onSubmit: handleFormSubmit
   });
 
-  useEffect( ()=>{
-   setErrors({});
-  },[!props.openModal])
-  
+  useEffect(() => {
+    setErrors({});
+  }, [!props.openModal])
+
   return (
     <BootstrapDialog
       onClose={() => props.setOpenModal(false)}
@@ -161,120 +143,43 @@ export default function AddNewEmployeeModal(props) {
       open={props.openModal}
     >
       <BootstrapDialogTitle id="customized-dialog-title" onClose={() => props.setOpenModal(false)}>
-        Add Employee Record
+        Add Admin Record
       </BootstrapDialogTitle>
       <DialogContent dividers>
         <Box sx={{ width: '100%' }}>
           <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={6}>
               <TextField
-                value={values.fname}
-                onChange={handleChange('fname')}
-                onBlur={handleBlur('fname')}
+                value={values.firstname}
+                onChange={handleChange('firstname')}
+                onBlur={handleBlur('firstname')}
                 margin="dense"
                 label="First Name"
                 type="text"
                 inputProps={{ style: { textTransform: "capitalize" } }}
                 fullWidth
               />
-              {(errors.fname && touched.fname) &&
-                <p className="text-danger small ">{errors.fname}</p>
+              {(errors.firstname && touched.firstname) &&
+                <p className="text-danger small ">{errors.firstname}</p>
               }
             </Grid>
             <Grid item xs={6}>
               <TextField
-                value={values.lname}
-                onChange={handleChange('lname')}
-                onBlur={handleBlur('lname')}
+                value={values.lastname}
+                onChange={handleChange('lastname')}
+                onBlur={handleBlur('lastname')}
                 inputProps={{ style: { textTransform: "capitalize" } }}
                 margin="dense"
                 label="Last Name"
                 type="text"
                 fullWidth
               />
-              {(errors.lname && touched.lname) &&
-                <p className="text-danger small ">{errors.lname}</p>
+              {(errors.lastname && touched.lastname) &&
+                <p className="text-danger small ">{errors.lastname}</p>
               }
             </Grid>
           </Grid>
-          <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            <Grid item xs={4}>
-              <TextField
-                value={values.purok}
-                onChange={handleChange('purok')}
-                onBlur={handleBlur('purok')}
-                inputProps={{ style: { textTransform: "capitalize" } }}
-                margin="dense"
-                label="Purok"
-                type="text"
-                fullWidth
-              />
-              {(errors.purok && touched.purok) &&
-                <p className="text-danger small ">{errors.purok}</p>
-              }
-            </Grid>
-            <Grid item xs={8}>
-              <TextField
-                value={values.street}
-                onChange={handleChange('street')}
-                onBlur={handleBlur('street')}
-                inputProps={{ style: { textTransform: "capitalize" } }}
-                margin="dense"
-                label="Street"
-                type="text"
-                fullWidth
-              />
-              {(errors.street && touched.street) &&
-                <p className="text-danger small ">{errors.street}</p>
-              }
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                value={values.barangay}
-                onChange={handleChange('barangay')}
-                onBlur={handleBlur('barangay')}
-                inputProps={{ style: { textTransform: "capitalize" } }}
-                margin="dense"
-                label="Barangay"
-                type="text"
-                fullWidth
-              />
-              {(errors.barangay && touched.barangay) &&
-                <p className="text-danger small ">{errors.barangay}</p>
-              }
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                value={values.town}
-                onChange={handleChange('town')}
-                onBlur={handleBlur('town')}
-                inputProps={{ style: { textTransform: "capitalize" } }}
-                margin="dense"
-                label="Town"
-                type="text"
-                fullWidth
-              />
-              {(errors.town && touched.town) &&
-                <p className="text-danger small ">{errors.town}</p>
-              }
-            </Grid>
-            <Grid item xs={4}>
-              <TextField
-                value={values.postal_code}
-                onChange={handleChange('postal_code')}
-                onBlur={handleBlur('postal_code')}
-                inputProps={{ style: { textTransform: "capitalize" } }}
-                margin="dense"
-                label="Postal Code"
-                type="text"
-                fullWidth
-              />
-              {(errors.postal_code && touched.postal_code) &&
-                <p className="text-danger small ">{errors.postal_code}</p>
-              }
-            </Grid>
 
-          </Grid>
           <TextField
             value={values.email}
             onChange={handleChange('email')}
@@ -289,17 +194,47 @@ export default function AddNewEmployeeModal(props) {
             <p className="text-danger small ">{errors.email}</p>
           }
           <TextField
-            value={values.contact}
-            onChange={handleChange('contact')}
-            onBlur={handleBlur('contact')}
+            value={values.address}
+            onChange={handleChange('address')}
+            onBlur={handleBlur('address')}
+            margin="dense"
+            label="Address"
+            type="text"
+            fullWidth
+          />
+          {(errors.address && touched.address) &&
+            <p className="text-danger small ">{errors.address}</p>
+          }
+
+          <TextField
+            value={values.contact_no}
+            onChange={handleChange('contact_no')}
+            onBlur={handleBlur('contact_no')}
             margin="dense"
             label="Contact Number"
             type="text"
             fullWidth
           />
-          {(errors.contact && touched.contact) &&
-            <p className="text-danger small ">{errors.contact}</p>
+          {(errors.contact_no && touched.contact_no) &&
+            <p className="text-danger small ">{errors.contact_no}</p>
           }
+
+          <TextField
+            value={values.birthday}
+            onChange={handleChange('birthday')}
+            onBlur={handleBlur('birthday')}
+            margin="dense"
+            type="date"
+            fullWidth
+            label="Birthday"
+            InputLabelProps={{
+              shrink: true,
+              }}
+          />
+          {(errors.birthday && touched.birthday) &&
+            <p className="text-danger small ">{errors.birthday}</p>
+          }
+
           <Grid container rowSpacing={1} mt={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
             <Grid item xs={6}>
               <FormControl sx={{ width: '100%' }}>

@@ -11,7 +11,7 @@ import Typography from "@mui/material/Typography";
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import { useNavigate } from 'react-router-dom';
 
-export const mainListItems = (
+export const MainListItems = (
   <div>
     <ListItem component="a" href="/dashboard">
       <ListItemIcon style={{ color: 'white' }}>
@@ -49,3 +49,4 @@ export const mainListItems = (
     </ListItem>
   </div>
 )
+export default MainListItems;

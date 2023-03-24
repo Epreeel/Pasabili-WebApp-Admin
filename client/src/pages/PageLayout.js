@@ -25,11 +25,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import Tooltip from "@mui/material/Tooltip";
 import Settings from "@mui/icons-material/Settings";
 import Logout from "@mui/icons-material/Logout";
-import { mainListItems } from "../components/ListItemComponent";
+import { MainListItems } from "../components/ListItemComponent";
+import Firebase from "../components/helpers/Firebase";
 import { useState } from "react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Cookies from 'js-cookie';
+import { decodeToken } from "react-jwt";
 
+
+const database=Firebase.database();
+const auth=Firebase.auth();
 function Copyright(props) {
   return (
     <Typography
@@ -96,7 +102,7 @@ const Drawer = styled(MuiDrawer, {
 }));
 const mdTheme = createTheme();
 const PageLayout = ({headerTitle,children}) => {
-
+  const [user, setUser] = useState(null);
   const [open, setOpen] = useState(true);
   const toggleDrawer = () => {
     setOpen(!open);
@@ -109,7 +115,28 @@ const PageLayout = ({headerTitle,children}) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+
+  const getCookiesJWT=()=>{
+    const cookie=Cookies.get("admin_id");
+    if(cookie){
+      const decodedToken = decodeToken(cookie);
+      setUser(JSON.parse(decodedToken.admin_id));
+    }
+  }
+  useEffect(() => {
+    getCookiesJWT();
+  }, [])
+
+
   const navigate = useNavigate();
+  const handleLogout = async (event) => {
+    if(auth.currentUser){
+      await auth.signOut();
+    }
+    Cookies.remove('admin_id');
+    navigate("/login");
+  };
 
   return (
     <ThemeProvider theme={mdTheme}>
@@ -173,7 +200,7 @@ const PageLayout = ({headerTitle,children}) => {
                   </a>
                 </MenuItem>
                 <MenuItem>
-                  <a  className="btn text-decoration-none text-dark">
+                  <a onClick={handleLogout}   className="btn text-decoration-none text-dark">
                   <i class="fa fa-sign-out" aria-hidden="true"></i>&nbsp;
                   Logout 
                   </a>
@@ -216,7 +243,7 @@ const PageLayout = ({headerTitle,children}) => {
           </Toolbar>
 
           <Divider />
-          <List>{mainListItems}</List>
+          <List>{MainListItems}</List>
           <Divider />
         </Drawer>
         <Box

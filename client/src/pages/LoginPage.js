@@ -53,7 +53,7 @@ const LoginPage = () => {
     });
     const navigate = useNavigate();
     useEffect(() => {
-        if (Cookies.get('user_id')) {
+        if (Cookies.get('admin_id')) {
             navigate("/dashboard");
         }
     }, [navigate]);
@@ -62,19 +62,12 @@ const LoginPage = () => {
         setOpen(true);
     }
     const handleFirebase = async (accessToken) => {
-        console.log(admin.email);
-        console.log(admin.password);
         await auth.signInWithEmailAndPassword(admin.email, admin.password)
             .then(function () {
                 setLoading(false);
-                if (auth.currentUser.emailVerified) {
-                    console.log("HI");
-                    Cookies.set('user_id', accessToken, { expires: 1 });
-                    navigate("/dashboard");
-                } else {
-                    console.log("HELLO");
-                    setOpen(true);
-                }
+                Cookies.set('admin_id', accessToken, { expires: 1 });
+               
+                navigate("/dashboard");
             })
             .catch(function (err) {
                 setLoading(false);
@@ -94,7 +87,7 @@ const LoginPage = () => {
                 password: admin.password
             }).then((res) => {
                 if (res.data.success) {
-                    handleFirebase(res.data.accessToken);
+                    handleFirebase(res.data.data);
                 } else {
                     setLoading(false);
                     setAlert({ visibility: true, message: res.data.message, severity: "error" });

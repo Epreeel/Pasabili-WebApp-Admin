@@ -1,35 +1,48 @@
 require('dotenv').config("./.env");
-const admin = require("../models/admin");
-const user = require("../models/user");
-const address = require("../models/address");
-const express = require('express');
-const jwt = require('jsonwebtoken');
+const Admin = require("../models/admin");
 var C = require("crypto-js");
-const { Op, Sequelize } = require('sequelize');
-var moment = require('moment');
 const { generateAdminAccessToken } = require('../helpers/generateAdminAccessToken');
 
-exports.login = async (req, res) => {
-    let data = await admin.model.findOne({
-        where: {
-            email: req.body.email,
-            status: true
-        }
-    })
-    if (data !== null) {
-        var bytes = C.AES.decrypt(data.password, process.env.SECRET_KEY);
-        var originalText = bytes.toString(C.enc.Utf8);
-        if (originalText === req.body.password && data.password != "") {
-            const accessToken = generateAdminAccessToken(data);
-            res.send({ success: true, message: "Login Successful!", data: data, accessToken })
-        } else {
-            res.send({ success: false, message: "The credentials provided does not match." });
-        }
-    } else {
-        res.send({ success: false, message: "Account not found." });
-    }
-}
+const admin = require('firebase-admin');
+const serviceAccount = require('../config/firebase-admin.json');
 
-exports.logout = async (req, res) => {
-    res.status(200).json("You logged out Successfully");
-}
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+const db = admin.firestore();
+const auth = admin.auth();
+
+exports.login = async (req, res) => {
+  const { email, password } = req.body;
+  
+  try {
+    const userRecord = await auth.getUserByEmail(email);
+    const userId = userRecord.uid;
+
+    const querySnapshot = await db.collection('Admins')
+      .doc(userId)
+      .get();
+
+    if (!querySnapshot.exists) {
+      res.send({ success: false, message: "Account not found." });
+      return;
+    }
+
+    const data = querySnapshot.data();
+   
+
+    const decryptedPassword = C.AES.decrypt(data.password, process.env.SECRET_KEY).toString(C.enc.Utf8);
+
+    if (decryptedPassword !== password || data.password === "") {
+      res.send({ success: false, message: "The credentials provided do not match." });
+      return;
+    }
+    const admin = new Admin(data, querySnapshot.id);
+    const accessToken = generateAdminAccessToken(admin);
+ 
+    res.send({ success: true, message: "Login Successful!", data: accessToken });
+  } catch (error) {
+    console.log(error);
+    res.send({ success: false, message: "The credentials provided do not match." });
+  }
+};

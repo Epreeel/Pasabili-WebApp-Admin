@@ -1,65 +1,38 @@
-const {DataTypes} = require('sequelize');
-const instance = require('../connection');
-const address = require('./address').model;
+class Admin {
 
-const admin = instance.sequelize.define("admins",{
-    admin_id:{
-        type: DataTypes.BIGINT,
-        primaryKey: true,
-        autoIncrement: true,
-        allowNull: false
-    },
-    address_id:{
-        type:DataTypes.BIGINT,
-        allowNull: false
-    },
-    email:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    fname:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    lname:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    image:{
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    contact_no:{
-        type: DataTypes.STRING,
-        allowNull: true
-    },
-    birthday:{
-        type: DataTypes.DATEONLY,
-        allowNull: true
-    },
-    gender:{
-        type: DataTypes.ENUM('MALE','FEMALE'),
-        allowNull: true
-    },
-    password:{
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    status:{
-        type:DataTypes.BOOLEAN,
-        defaultValue: true,
-        allowNull: false
-    },
-},{
-    createdAt: true,
-    updatedAt: true,
-    deletedAt: true,
-    tableName: "admins"
+  constructor(data, uid) {
+    this.admin_id = uid;
+    if (data) {
+      this.email = data.email;
+      this.password = data.password;
+      this.firstname = data.firstname;
+      this.lastname = data.lastname;
+      this.address = data.address;
+      this.status = data.status;
+      this.verified = data.verified;
+      this.contact_no = data.contact_no;
+      this.gender = data.gender;
+      this.birthday = data.birthday;
+      this.createdAt = data.createdAt;
+    }
+  }
+
+
+  static fromSnapshot(snapshot, admin_id) {
+    this.admin_id = admin_id;
+    this.email = snapshot.email.stringValue;
+    this.password = snapshot.password.stringValue;
+    this.firstname = snapshot.firstname.stringValue;
+    this.lastname = snapshot.lastname.stringValue;
+    this.address = snapshot.address.stringValue;
+    this.status = snapshot.status.booleanValue;
+    this.verified = snapshot.verified.booleanValue;
+    this.contact_no = snapshot.verified.stringValue;
+    this.gender = snapshot.verified.integerValue;
+    this.birthday = snapshot.verified.birthday.timeStampValue;
+    this.createdAt = snapshot.createdAt.timeStampValue;
+  }
+
 }
-);
 
-// Define association between "admins" and "addresses"
-admin.belongsTo(address, { foreignKey: 'address_id', as: 'adminAddress' }); // Adds "address_id" column to "admins" table
-address.hasOne(admin, { foreignKey: 'address_id' }); // Adds "address_id" column to "addresses" table
-
-exports.model = admin;
+module.exports = Admin;

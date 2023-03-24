@@ -18,7 +18,6 @@ import { useCustomerPageContext } from '../../../pages/CustomersPage';
 import { useSnackbar } from "notistack";
 import { CircularProgress } from "@mui/material";
 
-
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
     padding: theme.spacing(2),
@@ -65,11 +64,12 @@ export default function DeleteEmployeeModal(props) {
 
   const handleFormSubmit = async () => {
     setLoading(true);
-    const res =  await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/${props.module}/deactivate`, {
+    const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/${props.module}/deactivate`, {
       email: props.data[2],
-      password: values.password, accessToken: Cookies.get("admin_id")
+      password: values.password,
+      accessToken: Cookies.get("admin_id")
     })
-    if(res){
+    if (res) {
       setLoading(false);
       if (res.data.success) {
         refetch();
@@ -80,17 +80,17 @@ export default function DeleteEmployeeModal(props) {
       }
     }
   }
-  
+
   const { handleChange, handleSubmit, handleBlur, values, errors, isValid, touched, setFieldValue, setErrors } = useFormik({
     initialValues: { password: "" },
     enableReinitialize: true,
     validationSchema: passwordValidationSchema,
     onSubmit: handleFormSubmit
   });
-    // for resetting the values  modal
-    useEffect(() => {
-      setFieldValue('password', "");
-    }, [!props.openDeleteModal])
+  // for resetting the values  modal
+  useEffect(() => {
+    setFieldValue('password', "");
+  }, [!props.openDeleteModal])
 
 
   return (
@@ -131,7 +131,7 @@ export default function DeleteEmployeeModal(props) {
       </DialogContent>
       <DialogActions>
         <button className='btn' onClick={() => props.setDeleteModal(false)}>Close</button>
-        <button className='btn btn-danger' disabled={!isValid||loading} type="submit" onClick={handleSubmit}>{loading?<><CircularProgress size={20}/> Deactivating...</>:"Deactivate"}</button>
+        <button className='btn btn-danger' disabled={!isValid || loading} type="submit" onClick={handleSubmit}>{loading ? <><CircularProgress size={20} /> Deactivating...</> : "Deactivate"}</button>
       </DialogActions>
     </BootstrapDialog>
   );
