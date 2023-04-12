@@ -6,6 +6,8 @@ import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
 import ReactivateModal from '../common/modals/ReactivateModal';
+import { GENDERTYPE } from '../../constants/common';
+
 
 const theme = createTheme({
     components: {
@@ -26,7 +28,6 @@ const theme = createTheme({
 const InactiveCustomersComponent = () => {
     const { queryResult } = useCustomerPageContext();
     const inactives = queryResult.data.data.inactiveCustomers;
-    console.log(queryResult);
     const [data, setData] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openDeleteModal, setDeleteModal] = useState(false);
@@ -45,20 +46,16 @@ const InactiveCustomersComponent = () => {
     useEffect(() => {
         var temp = [];
         inactives && inactives.map((item) => {
-            const address =
-                `${item.userAddress.street ? item.userAddress.street : ""} ${item.userAddress.barangay ? item.userAddress.barangay : ""} 
-                ${item.userAddress.town ? item.userAddress.town : ""} ${item.userAddress.postal_code ? item.userAddress.postal_code : ""}`
-
-            temp.push([item.fname && item.fname,
-            item.lname && item.lname,
-            item.email && item.email,
-            item.contact_no && item.contact_no,
-            address,
-            item.birthday && moment().diff(item.birthday, 'years'),
-            item.gender && item.gender,
-            item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
-            item.status && item.status===true?'Active':'Inactive',]
-            );
+            temp.push([item.firstname && item.firstname,
+                item.lastname && item.lastname,
+                item.email && item.email,
+                item.contact_no && item.contact_no,
+                item.address && item.address,
+                item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
+                item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
+                item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
+                item.status && item.status === true ? 'Active' : 'Inactive'
+            ]);
         })
         setData(temp);
     }, [inactives])

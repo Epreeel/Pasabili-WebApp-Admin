@@ -5,6 +5,7 @@ import './App.css';
 import LoginPage from "./pages/LoginPage";
 import CustomersPage from "./pages/CustomersPage";
 import TransactionsPage from "./pages/TransactionsPage";
+import AccountSettingsPage from "./pages/AccountSettingsPage";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
        <Routes>
        <Route path="/" element={<Navigate to="/login" />} />
        <Route path="/login" element={<LoginPage/>} />
+       <Route path="/settings" element={<AccountSettingsPage/>} />
        <Route path="/dashboard" element={<DashboardPage/>} />
        <Route path="/employees" element={<EmployeesPage/>} />
        <Route path="/customers" element={<CustomersPage/>} />

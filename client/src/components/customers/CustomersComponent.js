@@ -6,7 +6,7 @@ import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
 import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
 import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-
+import { GENDERTYPE } from '../../constants/common';
 
 const theme = createTheme({
   components: {
@@ -26,7 +26,6 @@ const theme = createTheme({
 
 const CustomersComponent = () => {
   const { queryResult } = useCustomerPageContext();
-  console.log(queryResult);
   const customers = queryResult.data.data.customers;
   const [data, setData] = useState([]);
   const [openViewModal, setOpenViewModal] = useState(false);
@@ -35,16 +34,16 @@ const CustomersComponent = () => {
   useEffect(() => {
     var temp = [];
     customers && customers.map((item) => {
-      temp.push([item.fname && item.fname,
-      item.lname && item.lname,
-      item.email && item.email,
-      item.contact_no && item.contact_no,
-      `${item.userAddress.street ? item.userAddress.street : ""} ${item.userAddress.barangay ? item.userAddress.barangay : ""} ${item.userAddress.town ? item.userAddress.town : ""} ${item.userAddress.postal_code ? item.userAddress.postal_code : ""}`,
-      item.birthday && moment().diff(item.birthday, 'years'),
-      item.gender && item.gender,
-      item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
-      item.status && item.status === true ? 'Active' : 'Inactive',
-      item.image
+      temp.push([item.firstname && item.firstname,
+        item.lastname && item.lastname,
+        item.email && item.email,
+        item.contact_no && item.contact_no,
+        item.address && item.address,
+        item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
+        item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
+        item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
+        item.status && item.status === true ? 'Active' : 'Inactive',
+        item.image
       ]);
     })
     setData(temp);

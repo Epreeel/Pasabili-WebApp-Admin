@@ -10,7 +10,7 @@ const auth = admin.auth();
 const adminCollection = db.collection('Admins');
 const itinerantCollection = db.collection('Itinerants');
 exports.getAllAdminAndItinerant = async (req, res) => {
-    // Get all active admins with their addresses
+    // Get all active admins
     const adminsSnapshot = await adminCollection
         .where('status', '==', true)
         .orderBy('createdAt', 'desc')
@@ -22,7 +22,7 @@ exports.getAllAdminAndItinerant = async (req, res) => {
     });
 
 
-    // Get all active itinerants with their addresses
+    // Get all active itinerants
     const itinerantsSnapshot = await itinerantCollection
         .where('status', '==', true)
         .orderBy('createdAt', 'desc')
@@ -33,7 +33,7 @@ exports.getAllAdminAndItinerant = async (req, res) => {
         itinerants.push(itinerant);
     });
 
-    // Get all inactive itinerants with their addresses
+    // Get all inactive itinerants
     const inactiveItinerantsSnapshot = await itinerantCollection
         .where('status', '==', false)
         .orderBy('createdAt', 'desc')
@@ -44,7 +44,7 @@ exports.getAllAdminAndItinerant = async (req, res) => {
         inactiveItinerants.push(itinerant);
     });
 
-    // Get all inactive admins with their addresses
+    // Get all inactive admins
     const inactiveAdminsSnapshot = await adminCollection
         .where('status', '==', false)
         .orderBy('createdAt', 'desc')
@@ -178,39 +178,3 @@ exports.registerAdmin = async (req, res) => {
         res.send({ success: false, message: 'Account already exists!' });
     }
 };
-
-
-
-// exports.registerAdmin = async (req, res) => {
-//     let data = await admin.model.findAll({
-//         where: {
-//             email: req.body.email
-//         }
-//     })
-
-//     if (data.length === 0) {
-//         req.body.password = "p@ssw0rd";
-//         var hash = C.AES.encrypt(req.body.password, process.env.SECRET_KEY).toString();
-//         req.body.password = hash;
-//         let admin_address = await address.model.create({
-//             street: req.body.street,
-//             barangay: req.body.barangay,
-//             town: req.body.town,
-//             postal_code: req.body.postal_code
-//         });
-       
-//         await admin.model.create({
-//             address_id: admin_address.address_id,
-//             email: req.body.email,
-//             fname: req.body.fname,
-//             lname: req.body.lname,
-//             password: req.body.password,
-//             contact_no: req.body.contact,
-//             status: req.body.status
-//         });
-//         res.send({ success: true, message: "Successfully Register!" });
-//     } else {
-//         res.send({ success: false, message: "Account already exist!" });
-//     }
-
-// }

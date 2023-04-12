@@ -1,29 +1,38 @@
 class Customer {
-    constructor(customer_id, email, password, firstname, lastname, address, verified, status) {
-      this.customer_id = customer_id;
-      this.email = email;
-      this.password = password;
-      this.firstname = firstname;
-      this.lastname = lastname;
-      this.address = address;
-      this.verified = verified
-      this.status = status;
+
+  constructor(data, uid) {
+    this.customer = uid;
+    if (data) {
+      this.email = data.email;
+      this.password = data.password;
+      this.firstname = data.firstname;
+      this.lastname = data.lastname;
+      this.address = data.address;
+      this.status = data.status;
+      this.verified = data.verified;
+      this.contact_no = data.contact_no;
+      this.gender = data.gender;
+      this.birthday = data.birthday;
+      this.createdAt = data.createdAt;
     }
-  
-    static fromSnapshot(snapshot) {
-      const customer = new Customer();
-      customer.customer_id = snapshot.get("customer_id");
-      customer.email = snapshot.get("email");
-      customer.password = snapshot.get("password");
-      customer.firstname = snapshot.get("firstname");
-      customer.lastname = snapshot.get("lastname");
-      customer.address = snapshot.get("address");
-      customer.verified = snapshot.get("verified");
-      customer.status = snapshot.get("status");
-      return customer;
-    }
-  
   }
-  
-  module.exports = Customer;
-  
+
+
+  static fromSnapshot(snapshot, customer) {
+    this.customer = customer;
+    this.email = snapshot.email.stringValue;
+    this.password = snapshot.password.stringValue;
+    this.firstname = snapshot.firstname.stringValue;
+    this.lastname = snapshot.lastname.stringValue;
+    this.address = snapshot.address.stringValue;
+    this.status = snapshot.status.booleanValue;
+    this.verified = snapshot.verified.booleanValue;
+    this.contact_no = snapshot.verified.stringValue;
+    this.gender = snapshot.verified.integerValue;
+    this.birthday = snapshot.verified.birthday.timeStampValue;
+    this.createdAt = snapshot.createdAt.timeStampValue;
+  }
+
+}
+
+module.exports = Customer;

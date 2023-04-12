@@ -44,7 +44,8 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-export default function ViewEmployeeModal(props) {
+export default function ViewTransactionModal(props) {
+    // console.log(props);
   return (
     <BootstrapDialog
       fullWidth={true}
@@ -66,58 +67,74 @@ export default function ViewEmployeeModal(props) {
         <div className="container text-center mt-3">
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">First Name: </span>
+              <span className="text-black text-uppercase small">Transaction Number: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[0]}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[0] !== "" || props.data[0] !== null ? props.data[0] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Last Name: </span>
+              <span className="text-black text-uppercase small">Customer: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[1]}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[1] !== "" || props.data[1] !== 'null' ? props.data[1] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Email: </span>
+              <span className="text-black text-uppercase small">Itinerant: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[2]}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[2] !== "" || props.data[2] !== 'null' ? props.data[2] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Phone: </span>
+              <span className="text-black text-uppercase small">Amount: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[3] !== "" || props.data[3] !== null ? props.data[3] : "NONE"}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[3] !== "" || props.data[3] !== 'null' ? props.data[3] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Address: </span>
+              <span className="text-black text-uppercase small">Product Name: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[4] !== "" || props.data[4] !== 'null' ? props.data[4] : "NONE"}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[5] !== "" || props.data[5] !== 'null' ? props.data[5] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Age: </span>
+              <span className="text-black text-uppercase small">Quantity: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[5] !== "" || props.data[5] !== null ? props.data[5] : "NONE"}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[6] !== "" || props.data[6] !== 'null' ? props.data[6] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Gender: </span>
+              <span className="text-black text-uppercase small">Payment Method: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[6] !== "" || props.data[6] !== null ? props.data[6] : "NONE"}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[4] !== "" || props.data[4] !== null ? props.data[4] : "NONE"}</span>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col text-end">
+              <span className="text-black text-uppercase small">Status: </span>
+            </div>
+            <div className="col text-start">
+              <span className="text-black fs-6 fw-bold">{props.data[9] !== "" || props.data[9] !== null ? props.data[9] : "NONE"}</span>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col text-end">
+              <span className="text-black text-uppercase small">Date: </span>
+            </div>
+            <div className="col text-start">
+              <span className="text-black fs-6 fw-bold">{props.data[10] !== "" || props.data[10] !== null ? props.data[10] : "NONE"}</span>
             </div>
           </div>
         </div>
