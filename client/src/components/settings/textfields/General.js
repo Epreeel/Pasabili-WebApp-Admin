@@ -15,55 +15,57 @@ const General = (props) => {
     const navigate = useNavigate();
     const [url,setUrl] = useState(null);
     const [user,setUser] = useState({
-        fname:"",
-        lname:""
+        firstname:"",
+        lastname:""
     });
     const [progress, setProgress] = useState(0);
  
     useEffect(() => {
         setUser({
-          fname:props.user&&props.user.firstname?props.user.firstname:'',
-          lname:props.user&&props.user.lastname?props.user.lastname:'',
+          firstname:props.user&&props.user.firstname?props.user.firstname:'',
+          lastname:props.user&&props.user.lastname?props.user.lastname:'',
         });
         setUrl(props.user&&props.user.image?props.user.image:'');
     }, [props.user])
     
 
     const profileGeneralValidationSchema = yup.object().shape({
-        fname: yup
+        firstname: yup
             .string()
             .required('First Name is required'),
-        lname: yup
+        lastname: yup
             .string()
             .required('Last Name is required')
     })
-    
-    const handleFormSubmit = () =>{
+    const accessToken = Cookies.get('admin_id');
+    const handleFormSubmit = () => {
       setLoading(true);
-        if(Cookies.get('admin_id')){
-            Axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/profile/general_info`,{
-              fname:capitalizeWords(values.fname),
-              lname:capitalizeWords(values.lname),
-              accessToken: Cookies.get('admin_id')
-            }).then(res=>{
-              setLoading(false);
-              if(res.data.success){
-                props.setUser(res.data.data.acc);
-                Cookies.set('admin_id',res.data.data.accessToken, {expires: 1});
-                enqueueSnackbar(res.data.message, { variant:'success' });
-              }else{
-                enqueueSnackbar(res.data.message, { variant:'error' });
-              }
-            })
-          }else{
-            navigate("/login");
+      if (accessToken) {
+        Axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/profile/general_info`,{
+          firstname: capitalizeWords(values.firstname),
+          lastname: capitalizeWords(values.lastname),
+          accessToken: accessToken
+        }).then(res=>{
+          setLoading(false);
+          if (res.data.success) {
+            props.setUser(res.data.data.updatedAdmin);
+            console.log(res.data);
+            Cookies.remove('admin_id');
+            Cookies.set('admin_id', res.data.data.accessToken, { expires: 1 });
+            enqueueSnackbar(res.data.message, { variant: 'success' });
+          } else {
+            enqueueSnackbar(res.data.message, { variant: 'error' });
           }
+        })
+      } else {
+        navigate("/login");
+      }
     }
    
     const { handleChange, handleSubmit, handleBlur, values, errors,isValid,touched } = useFormik({
         initialValues: {
-            fname:props.user&&props.user.firstname?props.user.firstname:'',
-            lname:props.user&&props.user.lastname?props.user.lastname:'',
+            firstname:props.user&&props.user.firstname?props.user.firstname:'',
+            lastname:props.user&&props.user.lastname?props.user.lastname:'',
             email:props.user&&props.user.email?props.user.email:'',
             image:props.user&&props.user.image?props.user.image:'',
             address:props.user&&props.user.address?props.user.address:''
@@ -90,30 +92,30 @@ const General = (props) => {
             <Stack sx={{marginTop:2}} spacing={2}>
            
                  <TextField
-                    value= {values.fname}
-                    onChange={handleChange('fname')}
-                    onBlur={handleBlur('fname')}
+                    value= {values.firstname}
+                    onChange={handleChange('firstname')}
+                    onBlur={handleBlur('firstname')}
                     inputProps={{ style: { textTransform: "capitalize"} }}
-                    id="fname"
+                    id="firstname"
                     label="First Name"
                     type="text"
                     fullWidth
                 />
-                 {(errors.fname && touched.fname) &&
-                <p className="text-danger small ">{errors.fname}</p>
+                 {(errors.firstname && touched.firstname) &&
+                <p className="text-danger small ">{errors.firstname}</p>
                 } 
                   <TextField
-                    value={values.lname}
-                    onChange={handleChange('lname')}
-                    onBlur={handleBlur('lname')}
+                    value={values.lastname}
+                    onChange={handleChange('lastname')}
+                    onBlur={handleBlur('lastname')}
                     inputProps={{ style: { textTransform: "capitalize" } }}
-                    id="lname"
+                    id="lastname"
                     label="Last Name"
                     type="text"
                     fullWidth
                 />
-                 {(errors.lname && touched.lname) &&
-                <p className="text-danger small ">{errors.lname}</p>
+                 {(errors.lastname && touched.lastname) &&
+                <p className="text-danger small ">{errors.lastname}</p>
                 } 
                 <TextField
                     id="outlined-read-only-input"

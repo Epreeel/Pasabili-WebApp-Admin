@@ -44,7 +44,7 @@ const UploadProfile = ({values,url,setUrl,progress,setProgress,user}) => {
       let image = file;
       // images.forEach(function(image){
         let filename = uuidGenerator();
-        const uploadTask = storage.ref(`/gtrack-web/profile/${filename}`).put(image);
+        const uploadTask = storage.ref(`/Images/Profile Pictures/${filename}`).put(image);
         uploadTask.on(
           "state_changed",
           (snapshot) => {
@@ -56,18 +56,18 @@ const UploadProfile = ({values,url,setUrl,progress,setProgress,user}) => {
           },
           async () => {
             await storage
-            .ref("/gtrack-web/profile/")
+            .ref("/Images/Profile Pictures/")
             .child(filename)
             .getDownloadURL()
             .then((url)=>{
               setUrl(url);
               Axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/profile/change_profile_photo`,{
                 image:url,
-                accessToken: Cookies.get('user_id')
+                accessToken: Cookies.get('admin_id')
               }).then( res => {
                 if(res.data.success){
                   // props.setUser(res.data.data.acc);
-                  Cookies.set('user_id',res.data.data.accessToken, {expires: 1});
+                  Cookies.set('admin_id',res.data.data.accessToken, {expires: 1});
                   enqueueSnackbar(res.data.message, { variant:'success' });
                   setProgress(0);
                   window.location.reload();
@@ -93,7 +93,7 @@ const UploadProfile = ({values,url,setUrl,progress,setProgress,user}) => {
             </Box>
             
             <Stack direction="row" alignItems="center" spacing={2}>
-            <Avatar sx={{ height: '100px', width: '100px' }} src={`${url?url:values.image}`}>{`${user.fname[0]+user.lname[0]}`}</Avatar>
+            <Avatar sx={{ height: '100px', width: '100px' }} src={`${url?url:values.image}`}>{`${user.firstname[0]+user.lastname[0]}`}</Avatar>
             <Button
                   variant="contained"
                   component="label"

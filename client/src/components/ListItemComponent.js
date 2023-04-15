@@ -41,12 +41,6 @@ export const MainListItems = (
       <ListItemText primary={<Typography style={{ color: 'white' }}>Transactions</Typography>} />
     </ListItem>
 
-    <ListItem component="a" href="/concerns">
-      <ListItemIcon style={{ color: 'white' }}>
-        <ReportIcon />
-      </ListItemIcon>
-      <ListItemText primary={<Typography style={{ color: 'white' }}>Concerns</Typography>} />
-    </ListItem>
   </div>
 )
 export default MainListItems;

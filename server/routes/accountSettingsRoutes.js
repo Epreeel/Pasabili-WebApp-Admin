@@ -4,5 +4,5 @@ const accountSettingsController = require("../controllers/accountSettingsControl
 
 
 router.post("/general_info",accountSettingsController.changeGeneral);
-
+router.post("/change_profile_photo",accountSettingsController.changeProfilePhotoOnly);
 module.exports = router;
