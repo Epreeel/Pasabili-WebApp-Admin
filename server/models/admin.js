@@ -13,6 +13,7 @@ class Admin {
       this.contact_no = data.contact_no;
       this.gender = data.gender;
       this.birthday = data.birthday;
+      this.image = data.image;
       this.createdAt = data.createdAt;
     }
   }
@@ -27,9 +28,10 @@ class Admin {
     this.address = snapshot.address.stringValue;
     this.status = snapshot.status.booleanValue;
     this.verified = snapshot.verified.booleanValue;
-    this.contact_no = snapshot.verified.stringValue;
-    this.gender = snapshot.verified.integerValue;
-    this.birthday = snapshot.verified.birthday.timeStampValue;
+    this.contact_no = snapshot.contact_no.stringValue;
+    this.gender = snapshot.gender.integerValue;
+    this.birthday = snapshot.birthday.timeStampValue;
+    this.image = snapshot.image.stringValue;
     this.createdAt = snapshot.createdAt.timeStampValue;
   }
 

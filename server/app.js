@@ -13,15 +13,14 @@ app.use(express.json());
 const loginRoutes = require("./routes/loginRoutes");
 const employeeRoutes = require("./routes/employeeRoutes");
 const customerRoutes = require("./routes/customerRoutes");
-const transactionRoutes = require("./routes/transactionRoutes");
 const accountSettingsRoutes = require("./routes/accountSettingsRoutes");
+const dashboardRoutes = require("./routes/dashboardRoutes");
 
 app.use("/admin/", loginRoutes);
 app.use("/admin/employees", employeeRoutes);
 app.use("/admin/customers", customerRoutes);
-app.use("/admin/transactions", transactionRoutes);
 app.use("/admin/profile", accountSettingsRoutes);
-
+app.use("/admin/dashboard", dashboardRoutes);
 
 
 app.listen(8000,()=> console.log("Back end is running at port 8000"));
