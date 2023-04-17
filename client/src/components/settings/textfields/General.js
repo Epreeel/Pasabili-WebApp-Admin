@@ -28,7 +28,6 @@ const General = (props) => {
         setUrl(props.user&&props.user.image?props.user.image:'');
     }, [props.user])
     
-
     const profileGeneralValidationSchema = yup.object().shape({
         firstname: yup
             .string()
@@ -38,6 +37,7 @@ const General = (props) => {
             .required('Last Name is required')
     })
     const accessToken = Cookies.get('admin_id');
+    // console.log('ADMIN ID:', accessToken)
     const handleFormSubmit = () => {
       setLoading(true);
       if (accessToken) {
@@ -49,8 +49,6 @@ const General = (props) => {
           setLoading(false);
           if (res.data.success) {
             props.setUser(res.data.data.updatedAdmin);
-            console.log(res.data);
-            Cookies.remove('admin_id');
             Cookies.set('admin_id', res.data.data.accessToken, { expires: 1 });
             enqueueSnackbar(res.data.message, { variant: 'success' });
           } else {

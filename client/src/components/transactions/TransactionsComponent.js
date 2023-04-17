@@ -5,6 +5,7 @@ import { useTransactionPageContext } from '../../pages/TransactionsPage';
 import moment from 'moment';
 import ViewTransactionModal from '../transactions/modals/ViewTransactionModal';
 import { ButtonGroup } from '@mui/material';
+import { REQUEST_STATUS } from '../../constants/common';
 
 const theme = createTheme({
   components: {
@@ -26,23 +27,25 @@ const TransactionsComponent = () => {
   const { queryResult } = useTransactionPageContext();
   const [openViewModal, setOpenViewModal] = useState(false);
   const [rowData, setRowData] = useState([]);
-  const transactions = queryResult.data.data;
+  const transactions = queryResult.data;
   console.log(transactions)
   useEffect(() => {
     var temp = [];
     transactions && transactions.map((item) => {
-      temp.push([item.transaction_number && item.transaction_number,
-      item.customer_id.firstname +''+ item.customer_id.lastname &&  item.customer_id.firstname +' '+ item.customer_id.lastname,
-      item.itinerant_id.firstname +''+ item.itinerant_id.lastname &&  item.itinerant_id.firstname +' '+ item.itinerant_id.lastname,
-      item.amount && " \u20B1" + item.amount,
-      item.payment_method && item.payment_method,
-      item.product_name && item.product_name,
-      item.quantity && item.quantity,
-      item.pickup_address && item.pickup_address,
-      item.dropoff_address && item.dropoff_address,
-      item.status && item.status,
-      item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY, h:mm A")
-      ]);
+      let totalAmount = 0;
+      item.details && item.details.map((detail) => {
+        const price = detail.price * detail.qty;
+        totalAmount += price;
+        temp.push([item.requestId && item.requestId,
+          item.custFname+' '+ item.custLname &&  item.custFname+' '+ item.custLname,
+          item.itinFname+' '+ item.itinLname &&  item.itinFname+' '+ item.itinLname,
+          totalAmount && " \u20B1" +  totalAmount,
+          item.details && item.details,
+          item.reqDAddress && item.reqDAddress,
+          item.status && REQUEST_STATUS[item.status - 1],
+          item.reqDDate && moment(item.reqDDate.time).format("MMMM DD, YYYY, h:mm A")
+          ]);
+      });
     })
     setData(temp);
   }, [transactions])
@@ -73,15 +76,15 @@ const TransactionsComponent = () => {
         }
     },
     {
-        name:"Itinerant",
-        label:"Itinerant",
-        options: {
-          filter: false,
-          sort: false,
-          display: false,
-          viewColumns: false,
-        }
-    },
+      name:"Itinerant",
+      label:"Itinerant",
+      options: {
+        filter: false,
+        sort: false,
+        display: false,
+        viewColumns: false,
+      }
+  },
     {
       name: "Amount",
       label: "Amount",
@@ -91,36 +94,8 @@ const TransactionsComponent = () => {
       }
     },
     {
-      name: "Payment Method",
-      label: "Payment Method",
-      options: {
-        filter: true,
-        sort: true,
-      }
-    },
-    {
-      name: "Product Name",
-      label: "Product Name",
-      options: {
-        filter: false,
-        sort: false,
-        display: false,
-        viewColumns: false,
-      }
-    },
-    {
-      name: "Quantity",
-      label: "Quantity",
-      options: {
-        filter: false,
-        sort: false,
-        display: false,
-        viewColumns: false,
-      }
-    },
-    {
-      name: "Pickup Address",
-      label: "Pickup Address",
+      name: "Details",
+      label: "Details",
       options: {
         filter: false,
         sort: false,
@@ -176,6 +151,7 @@ const TransactionsComponent = () => {
     filter: true,
     filterType: 'dropdown'
   };
+  console.log(rowData);
   return (
     <div>
       <ViewTransactionModal data={rowData} title=" View Transaction Details" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />

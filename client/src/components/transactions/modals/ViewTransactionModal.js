@@ -45,7 +45,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function ViewTransactionModal(props) {
-    // console.log(props);
+  console.log(props.data);
   return (
     <BootstrapDialog
       fullWidth={true}
@@ -56,7 +56,7 @@ export default function ViewTransactionModal(props) {
       <BootstrapDialogTitle
         onClose={props.handleCloseModal}
       >
-       {props.title}
+        {props.title}
       </BootstrapDialogTitle>
       <DialogContent dividers >
         <div className="container text-center m-auto align-content-center align-middle">
@@ -91,7 +91,7 @@ export default function ViewTransactionModal(props) {
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Amount: </span>
+              <span className="text-black text-uppercase small">Total Amount: </span>
             </div>
             <div className="col text-start">
               <span className="text-black fs-6 fw-bold">{props.data[3] !== "" || props.data[3] !== 'null' ? props.data[3] : "NONE"}</span>
@@ -99,7 +99,7 @@ export default function ViewTransactionModal(props) {
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Product Name: </span>
+              <span className="text-black text-uppercase small">Request Address: </span>
             </div>
             <div className="col text-start">
               <span className="text-black fs-6 fw-bold">{props.data[5] !== "" || props.data[5] !== 'null' ? props.data[5] : "NONE"}</span>
@@ -107,36 +107,42 @@ export default function ViewTransactionModal(props) {
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Quantity: </span>
-            </div>
-            <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[6] !== "" || props.data[6] !== 'null' ? props.data[6] : "NONE"}</span>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col text-end">
-              <span className="text-black text-uppercase small">Payment Method: </span>
-            </div>
-            <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[4] !== "" || props.data[4] !== null ? props.data[4] : "NONE"}</span>
-            </div>
-          </div>
-          <div className="row">
-            <div className="col text-end">
               <span className="text-black text-uppercase small">Status: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[9] !== "" || props.data[9] !== null ? props.data[9] : "NONE"}</span>
+              <span className="text-black fs-6 fw-bold">{props.data[6] !== "" || props.data[6] !== null ? props.data[6] : "NONE"}</span>
             </div>
           </div>
           <div className="row">
             <div className="col text-end">
-              <span className="text-black text-uppercase small">Date: </span>
+              <span className="text-black text-uppercase small">Details: </span>
             </div>
             <div className="col text-start">
-              <span className="text-black fs-6 fw-bold">{props.data[10] !== "" || props.data[10] !== null ? props.data[10] : "NONE"}</span>
+              {props.data[4] && props.data[4].length
+                > 0 ? (
+                props.data[4].map((item, index) => (
+                  <div key={index} style={{ marginBottom: '10px' }}>
+                    <p className="col text-start" style={{ marginBottom: '5px' }}>{'Product Name: ' + item.item}</p>
+                    <div className="row">
+                      <div className="col">
+                        <p style={{ marginBottom: '5px' }}>{'Price: '}</p>
+                        <p>{"\u20B1" + item.price}</p>
+                      </div>
+                      <div className="col">
+                        <p style={{ marginBottom: '5px' }}>{'Quantity: '}</p>
+                        <p>{item.qty}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                ))
+              ) : (
+                <span className="text-black fs-6 fw-bold">NONE</span>
+              )}
             </div>
           </div>
+
+
         </div>
       </DialogContent>
       <DialogActions>

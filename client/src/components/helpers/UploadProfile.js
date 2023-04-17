@@ -66,11 +66,12 @@ const UploadProfile = ({values,url,setUrl,progress,setProgress,user}) => {
                 accessToken: Cookies.get('admin_id')
               }).then( res => {
                 if(res.data.success){
-                  // props.setUser(res.data.data.acc);
+                  console.log(res.data);
+                  setUrl(res.data.data.updatedAdmin.image);
                   Cookies.set('admin_id',res.data.data.accessToken, {expires: 1});
                   enqueueSnackbar(res.data.message, { variant:'success' });
                   setProgress(0);
-                  window.location.reload();
+                  // window.location.reload();
                 }else{
                   enqueueSnackbar(res.data.message, { variant:'error' });
                 }
@@ -79,11 +80,6 @@ const UploadProfile = ({values,url,setUrl,progress,setProgress,user}) => {
             })
           }
         )
-      
-
-    // Promise.all(promises)
-    // .then(() => alert("All images uploaded"))
-    // .catch((err) => console.log(err));
   }
 
     return (

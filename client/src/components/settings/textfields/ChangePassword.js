@@ -57,7 +57,7 @@ const ChangePassword = (props) => {
 
     const handleFormSubmit = async(values, {resetForm}) => {
       setLoading(true);
-        if(Cookies.get('user_id')){
+        if(Cookies.get('admin_id')){
           var credential=await Firebase.auth.EmailAuthProvider.credential(user.email, values.password);
           await auth.currentUser.reauthenticateWithCredential(credential)
           Axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/profile/change_password`,{

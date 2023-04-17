@@ -3,7 +3,6 @@ import { Box,Tab,Tabs } from "@mui/material";
 import General from "./textfields/General";
 import PropTypes from 'prop-types';
 import ChangePassword from "./textfields/ChangePassword";
-import Address from "./textfields/Address";
 import Info from "./textfields/Info";
 function TabPanel(props) {
     const { children, value, index, ...other } = props;
