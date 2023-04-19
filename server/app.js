@@ -15,12 +15,14 @@ const employeeRoutes = require("./routes/employeeRoutes");
 const customerRoutes = require("./routes/customerRoutes");
 const accountSettingsRoutes = require("./routes/accountSettingsRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const verificationRoutes = require("./routes/verificationRoutes");
 
 app.use("/admin/", loginRoutes);
 app.use("/admin/employees", employeeRoutes);
 app.use("/admin/customers", customerRoutes);
 app.use("/admin/profile", accountSettingsRoutes);
 app.use("/admin/dashboard", dashboardRoutes);
+app.use("/admin/verification", verificationRoutes);
 
 
 app.listen(8000,()=> console.log("Back end is running at port 8000"));
