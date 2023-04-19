@@ -6,6 +6,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import SupervisorAccountIcon from '@mui/icons-material/SupervisorAccount';
 import PersonIcon from '@mui/icons-material/Person';
 import ReceiptIcon from '@mui/icons-material/Receipt';
+import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
 import ReportIcon from '@mui/icons-material/Report';
 import Typography from "@mui/material/Typography";
 import ListAltIcon from '@mui/icons-material/ListAlt';
@@ -32,6 +33,13 @@ export const MainListItems = (
         <PersonIcon />
       </ListItemIcon>
       <ListItemText primary={<Typography style={{ color: 'white' }}>Customers</Typography>} />
+    </ListItem>
+
+    <ListItem component="a" href="/verifications">
+      <ListItemIcon style={{ color: 'white' }}>
+        <VerifiedUserIcon />
+      </ListItemIcon>
+      <ListItemText primary={<Typography style={{ color: 'white' }}>User Verification</Typography>} />
     </ListItem>
 
     <ListItem component="a" href="/transactions">

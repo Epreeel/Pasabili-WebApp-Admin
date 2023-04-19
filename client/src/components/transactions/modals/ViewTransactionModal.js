@@ -45,7 +45,6 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function ViewTransactionModal(props) {
-  console.log(props.data);
   return (
     <BootstrapDialog
       fullWidth={true}

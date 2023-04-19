@@ -180,7 +180,8 @@ const PageLayout = ({headerTitle,children}) => {
                 aria-haspopup="true"
                 aria-expanded={openDropDown ? "true" : undefined}
               >
-                <Avatar sx={{ width: 32, height: 32 }}></Avatar>
+                {(user&&user.image!==null) && <Avatar sx={{ width: 32, height: 32 }} src={user&&user.image}></Avatar>}
+                {(user&&user.image===null) && <Avatar sx={{ width: 32, height: 32,fontSize:15,textTransform:"uppercase"}}>{user&&user.firstname[0]}{user&&user.lastname[0]}</Avatar>}
               </IconButton>
             </Tooltip>
               <Menu

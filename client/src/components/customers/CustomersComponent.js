@@ -7,6 +7,7 @@ import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
 import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { GENDERTYPE } from '../../constants/common';
+import CheckIcon from '@mui/icons-material/Check';
 
 const theme = createTheme({
   components: {
@@ -27,6 +28,7 @@ const theme = createTheme({
 const CustomersComponent = () => {
   const { queryResult } = useCustomerPageContext();
   const customers = queryResult.data.data.customers;
+  console.log(customers);
   const [data, setData] = useState([]);
   const [openViewModal, setOpenViewModal] = useState(false);
   const [openDeleteModal, setDeleteModal] = useState(false);
@@ -43,6 +45,9 @@ const CustomersComponent = () => {
         item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
         item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
         item.status && item.status === true ? 'Active' : 'Inactive',
+        item.status && item.status === true ? 
+        <CheckIcon style={{color: 'green'}} /> : 
+        <span style={{display: 'none'}} />,
         item.image
       ]);
     })
@@ -51,7 +56,6 @@ const CustomersComponent = () => {
 
   const handleOpenViewModal = (rowData) => {
     setOpenViewModal(true);
-    console.log(rowData);
     setRowData(rowData);
   }
   const handleDeleteModal = (e, rowData) => {
@@ -140,6 +144,14 @@ const CustomersComponent = () => {
     {
       name: "Status",
       label: "Status",
+      options: {
+        filter: false,
+        sort: false
+      }
+    },
+    {
+      name: "Verified",
+      label: "Verified",
       options: {
         filter: false,
         sort: false
