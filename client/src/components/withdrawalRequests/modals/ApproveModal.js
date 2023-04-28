@@ -13,7 +13,7 @@ import { useFormik } from 'formik';
 import axios from "axios";
 import Cookies from "js-cookie";
 import * as yup from 'yup'
-import { useUserVerificationPageContext } from "../../../pages/UserVerificationPage";
+import { useWithdrawalRequestPageContext } from '../../../pages/WithdrawalRequestPage';
 import { useSnackbar } from "notistack";
 import { CircularProgress } from "@mui/material";
 
@@ -49,9 +49,8 @@ const BootstrapDialogTitle = (props) => {
   );
 };
 
-export default function VerifyCustomerModal(props) {
-  console.log(props);
-  const { refetch: customerRefetch } = useUserVerificationPageContext();
+export default function ApproveModal(props) {
+  const { refetch: customerRefetch } = useWithdrawalRequestPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = React.useState(false);
@@ -63,8 +62,8 @@ export default function VerifyCustomerModal(props) {
 
   const handleFormSubmit = async () => {
     setLoading(true);
-    const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/verification/verify`, {
-      [props.data[2] === 'Itinerant' ? 'itinId' : 'custId']: props.data[5],
+    const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/withdrawalRequest/approve`, {
+      withdrawal_request_id: props.data[0],
       password: values.password,
       accessToken: Cookies.get("admin_id")
     })
@@ -72,7 +71,7 @@ export default function VerifyCustomerModal(props) {
       setLoading(false);
       if (res.data.success) {
         refetch();
-        props.setDeleteModal(false);
+        props.setApproveModal(false);
         enqueueSnackbar(res.data.message, { variant: 'success' });
       } else {
         enqueueSnackbar(res.data.message, { variant: 'error' });
@@ -89,14 +88,14 @@ export default function VerifyCustomerModal(props) {
   // for resetting the values  modal
   useEffect(() => {
     setFieldValue('password', "");
-  }, [!props.openDeleteModal])
+  }, [!props.openApproveModal])
 
 
   return (
     <BootstrapDialog
-      onClose={() => props.setDeleteModal(false)}
+      onClose={() => props.setApproveModal(false)}
       aria-labelledby="customized-dialog-title"
-      open={props.openDeleteModal}
+      open={props.openApproveModal}
     >
       <BootstrapDialogTitle
         id="customized-dialog-title"
@@ -129,8 +128,8 @@ export default function VerifyCustomerModal(props) {
         </Box>
       </DialogContent>
       <DialogActions>
-        <button className='btn' onClick={() => props.setDeleteModal(false)}>Close</button>
-        <button className='btn btn-success' disabled={!isValid || loading} type="submit" onClick={handleSubmit}>{loading ? <><CircularProgress size={20} /> Verifying...</> : "Verify"}</button>
+        <button className='btn' onClick={() => props.setApproveModal(false)}>Close</button>
+        <button className='btn btn-success' disabled={!isValid || loading} type="submit" onClick={handleSubmit}>{loading ? <><CircularProgress size={20} /> Verifying...</> : "Approve"}</button>
       </DialogActions>
     </BootstrapDialog>
   );

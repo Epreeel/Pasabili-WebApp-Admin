@@ -11,6 +11,7 @@ import ReportIcon from '@mui/icons-material/Report';
 import Typography from "@mui/material/Typography";
 import ListAltIcon from '@mui/icons-material/ListAlt';
 import { useNavigate } from 'react-router-dom';
+import RequestPageIcon from '@mui/icons-material/RequestPage';
 
 export const MainListItems = (
   <div>
@@ -47,6 +48,13 @@ export const MainListItems = (
         <ReceiptIcon />
       </ListItemIcon>
       <ListItemText primary={<Typography style={{ color: 'white' }}>Transactions</Typography>} />
+    </ListItem>
+
+    <ListItem component="a" href="/withdrawalRequests">
+      <ListItemIcon style={{ color: 'white' }}>
+        <RequestPageIcon />
+      </ListItemIcon>
+      <ListItemText primary={<Typography style={{ color: 'white' }}>Withdrawal Requests</Typography>} />
     </ListItem>
 
   </div>
