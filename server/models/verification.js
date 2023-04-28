@@ -4,6 +4,7 @@ class Verification {
       this.verification_id = uid;
       if (data) {
         this.custId = data.custId;
+        this.itinId = data.itinId;
         this.introduction = data.introduction;
         this.image = data.image;
         this.createdAt = data.createdAt;
@@ -15,6 +16,7 @@ class Verification {
     static fromSnapshot(snapshot, verification_id) {
       this.verification_id = verification_id;
       this.custId = snapshot.custId.stringValue;
+      this.itinId = snapshot.itinId.stringValue;
       this.introduction = snapshot.introduction.stringValue;
       this.image = snapshot.image.stringValue;
       this.createdAt = snapshot.createdAt.timeStampValue;
