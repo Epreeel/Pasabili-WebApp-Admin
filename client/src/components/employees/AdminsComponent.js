@@ -5,25 +5,26 @@ import moment from 'moment';
 import { useEmployeePageContext } from '../../pages/EmployeesPage';
 import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
 import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
-import { ButtonGroup} from '@mui/material';
+import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { GENDERTYPE } from '../../constants/common';
-
+import Firebase from '../helpers/Firebase';
 
 const theme = createTheme({
   components: {
-      MUIDataTableBodyRow: {
-        styleOverrides:{
-          root: {
-              "&.MuiTableRow-hover": {
-                  "&:hover": {
-                    cursor:'pointer'
-                  }
-                }
+    MUIDataTableBodyRow: {
+      styleOverrides: {
+        root: {
+          "&.MuiTableRow-hover": {
+            "&:hover": {
+              cursor: 'pointer'
+            }
           }
         }
-      },
-    }})
+      }
+    },
+  }
+})
 
 const AdminsComponent = () => {
   const { queryResult } = useEmployeePageContext();
@@ -36,6 +37,10 @@ const AdminsComponent = () => {
   useEffect(() => {
     var temp = [];
     admins && admins.map((item) => {
+      const timestamp = Firebase.firestore.Timestamp.fromMillis(
+        item.createdAt._seconds * 1000 + item.createdAt._nanoseconds / 1000000
+      );
+      const createdAt = timestamp.toDate();
       temp.push([item.firstname && item.firstname,
       item.lastname && item.lastname,
       item.email && item.email,
@@ -43,7 +48,7 @@ const AdminsComponent = () => {
       item.address && item.address,
       item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
       item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
-      item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
+      item.createdAt && moment(createdAt).format("MMMM DD, YYYY"),
       item.status && item.status === true ? 'Active' : 'Inactive',
       item.image
       ]);
@@ -166,7 +171,7 @@ const AdminsComponent = () => {
         customBodyRender: (value, tableMeta, updateValue) => {
           return (
             <ButtonGroup>
-              <button onClick={()=>handleOpenViewModal(tableMeta.rowData)} className="btn btn-primary mx-1"><i className="fa fa-info-circle" aria-hidden="true"></i></button>
+              <button onClick={() => handleOpenViewModal(tableMeta.rowData)} className="btn btn-primary mx-1"><i className="fa fa-info-circle" aria-hidden="true"></i></button>
               <button onClick={(e) => handleDeleteModal(e, tableMeta.rowData)} className={(tableMeta.rowData[8] === "Active") ? "btn btn-danger" : "btn btn-success"}><i className={(tableMeta.rowData[8] === "Active") ? "fa fa-eye-slash" : "fa fa-check"} aria-hidden="true"></i></button>
             </ButtonGroup>
           )
@@ -196,8 +201,8 @@ const AdminsComponent = () => {
         openModal={openAddModal}
         setOpenModal={setOpenAddModal}
       />
-      <ViewEmployeeModal data={rowData} title =" View Employee Details" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />
-      <DeleteEmployeeModal data={rowData} title = "Are you sure you want to Deactivate this Employee Record?" module = {"employees"} openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
+      <ViewEmployeeModal data={rowData} title=" View Employee Details" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />
+      <DeleteEmployeeModal data={rowData} title="Are you sure you want to Deactivate this Employee Record?" module={"employees"} openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
       <ThemeProvider theme={theme}>
         <MUIDataTable
           title={"Admins List"}

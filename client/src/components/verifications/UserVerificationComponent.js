@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react'
 import MUIDataTable from "mui-datatables";
 import moment from 'moment';
 import { useUserVerificationPageContext } from '../../pages/UserVerificationPage';
-import ViewEmployeeModal from '../common/modals/ViewEmployeeModal';
-import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
 import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ViewUserVerificationModal from './modals/ViewUserVerificationModal';
 import VerifyCustomerModal from './modals/VerifyCustomerModal';
+import Firebase from '../helpers/Firebase';
 
 const theme = createTheme({
     components: {
@@ -27,6 +26,7 @@ const theme = createTheme({
 
 const UserVerificationComponent = () => {
     const { queryResult } = useUserVerificationPageContext();
+
     const verifications = queryResult.data.data.verifications;
     const [data, setData] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
@@ -35,11 +35,17 @@ const UserVerificationComponent = () => {
     useEffect(() => {
         var temp = [];
         verifications && verifications.map((item) => {
-            temp.push([ item.custId,
+            const timestamp = Firebase.firestore.Timestamp.fromMillis(
+                item.createdAt._seconds * 1000 +   item.createdAt._nanoseconds / 1000000
+            );
+            const createdAt = timestamp.toDate();
+            temp.push([ 
             item.customerDetails.firstname + ' ' + item.customerDetails.lastname && item.customerDetails.firstname + ' ' + item.customerDetails.lastname,
             item.introduction,
-            item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
-            item.image
+            item.custId && item.custId != null ? 'Customer' : 'Itinerant',
+            item.createdAt && moment(createdAt).format("MMMM DD, YYYY"),
+            item.image,
+            item.custId ? item.custId : item.itinId
             ]);
         })
         setData(temp);
@@ -47,7 +53,6 @@ const UserVerificationComponent = () => {
 
     const handleOpenViewModal = (rowData) => {
         setOpenViewModal(true);
-        console.log(rowData);
         setRowData(rowData);
     }
     const handleDeleteModal = (e, rowData) => {
@@ -58,16 +63,8 @@ const UserVerificationComponent = () => {
 
     const columns = [
         {
-            name: "Customer Id",
-            label: "Customer Id",
-            options: {
-                filter: true,
-                sort: true
-            }
-        },
-        {
-            name: "Customer Name",
-            label: "Customer Name",
+            name: "Name",
+            label: "Name",
             options: {
                 filter: true,
                 sort: true
@@ -81,6 +78,15 @@ const UserVerificationComponent = () => {
                 sort: false
             }
         },
+        {
+            name: "Type",
+            label: "Type",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+
 
         {
             name: "Date Added",

@@ -7,6 +7,7 @@ import DeleteEmployeeModal from '../common/modals/DeleteEmployeeModal';
 import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { GENDERTYPE } from '../../constants/common';
+import Firebase from '../helpers/Firebase';
 
 const theme = createTheme({
   components: {
@@ -34,6 +35,10 @@ const ItinerantsComponent = () => {
   useEffect(() => {
     var temp = [];
     itinerants && itinerants.map((item) => {
+      const timestamp = Firebase.firestore.Timestamp.fromMillis(
+        item.createdAt._seconds * 1000 + item.createdAt._nanoseconds / 1000000
+      );
+      const createdAt = timestamp.toDate();
       temp.push([item.firstname && item.firstname,
       item.lastname && item.lastname,
       item.email && item.email,
@@ -41,7 +46,7 @@ const ItinerantsComponent = () => {
       item.address && item.address,
       item.birthday && moment().diff(moment.unix(item.birthday._seconds), 'years'),
       item.gender && item.gender === 1 ? GENDERTYPE[0] : GENDERTYPE[1],
-      item.createdAt && moment(item.createdAt).format("MMMM DD, YYYY"),
+      item.createdAt && moment(createdAt).format("MMMM DD, YYYY"),
       item.status && item.status === true ? 'Active' : 'Inactive',
       item.image
       ]);

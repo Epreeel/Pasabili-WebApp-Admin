@@ -7,6 +7,7 @@ import CustomersPage from "./pages/CustomersPage";
 import TransactionsPage from "./pages/TransactionsPage";
 import AccountSettingsPage from "./pages/AccountSettingsPage";
 import UserVerificationPage from "./pages/UserVerificationPage";
+import WithdrawalRequestPage from "./pages/WithdrawalRequestPage";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
        <Route path="/customers" element={<CustomersPage/>} />
        <Route path="/transactions" element={<TransactionsPage/>} />
        <Route path="/verifications" element={<UserVerificationPage/>} />
+       <Route path="/withdrawalRequests" element={<WithdrawalRequestPage/>} />
       </Routes>
     </div>
   );
