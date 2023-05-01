@@ -14,9 +14,9 @@ const auth = admin.auth();
 
 exports.login = async (req, res) => {
   const { email, password } = req.body;
-  
   try {
     const userRecord = await auth.getUserByEmail(email);
+    console.log(userRecord);
     const userId = userRecord.uid;
 
     const querySnapshot = await db.collection('Admins')
@@ -29,8 +29,6 @@ exports.login = async (req, res) => {
     }
 
     const data = querySnapshot.data();
-   
-
     const decryptedPassword = C.AES.decrypt(data.password, process.env.SECRET_KEY).toString(C.enc.Utf8);
 
     if (decryptedPassword !== password || data.password === "") {
@@ -39,7 +37,6 @@ exports.login = async (req, res) => {
     }
     const admin = new Admin(data, querySnapshot.id);
     const accessToken = generateAdminAccessToken(admin);
- 
     res.send({ success: true, message: "Login Successful!", data: accessToken });
   } catch (error) {
     console.log(error);
