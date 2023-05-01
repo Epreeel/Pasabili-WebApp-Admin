@@ -21,8 +21,9 @@ import { capitalizeWords } from '../../helpers/TextFormat';
 import { useEmployeePageContext } from '../../../pages/EmployeesPage';
 import { useSnackbar } from 'notistack'
 import { CircularProgress } from '@mui/material';
+import Firebase from '../../../components/helpers/Firebase';
 
-
+const auth = Firebase.auth();
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
     width: '500px',
@@ -103,26 +104,41 @@ export default function AddNewEmployeeModal(props) {
       .max(11, `Must be 11 digits starting with 09`),
   })
 
+  const handleFirebase = async (values, resetForm) => {
+    try {
+      const userCredential = await auth.createUserWithEmailAndPassword(values.email, "p@ssw0rd");
+      const uid = userCredential.user.uid;
+      axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/employees/add`, {
+        email: values.email,
+        contact_no: values.contact_no,
+        firstname: capitalizeWords(values.firstname),
+        lastname: capitalizeWords(values.lastname),
+        address: capitalizeWords(values.address),
+        birthday: values.birthday,
+        gender: values.gender,
+        uid: uid
+      })
+        .then(res => {
+          setLoading(false);
+          if (res.data.success) {
+       
+           
+            refetch();
+            enqueueSnackbar(res.data.message, { variant: 'success' });
+          } else {
+            enqueueSnackbar(res.data.message, { variant: 'error' });
+          }
+        })
+    } catch (error) {
+      console.log(error);
+      enqueueSnackbar(error.message, { variant: 'error' });
+    }
+  };
+
   const handleFormSubmit = async (values, { resetForm }) => {
     setLoading(true);
-    axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/employees/add`, {
-      email: values.email,
-      contact_no: values.contact_no,
-      firstname: capitalizeWords(values.firstname),
-      lastname: capitalizeWords(values.lastname),
-      address: capitalizeWords(values.address),
-      birthday: values.birthday,
-      gender: values.gender,
-    })
-      .then(res => {
-        setLoading(false);
-        if (res.data.success) {
-          refetch();
-          enqueueSnackbar(res.data.message, { variant: 'success' });
-        } else {
-          enqueueSnackbar(res.data.message, { variant: 'error' });
-        }
-      })
+    handleFirebase(values,resetForm);
+ 
   }
   const { handleChange, handleSubmit, handleBlur, values, errors, isValid, touched, setErrors } = useFormik({
     initialValues: { firstname: '', lastname: '', email: '', contact_no: '', address: '', birthday: '', gender: '' },

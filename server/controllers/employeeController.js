@@ -141,7 +141,7 @@ exports.reactivateEmployee = async (req, res) => {
 }
 
 exports.registerAdmin = async (req, res) => {
-    console.log(req.body);
+  
     const snapshot = await adminCollection.where('email', '==', req.body.email).get();
 
     if (snapshot.empty) {
@@ -167,13 +167,10 @@ exports.registerAdmin = async (req, res) => {
             birthday: timestamp,
             createdAt : admin.firestore.Timestamp.now()
         };
-        await auth.createUser({
-            email: req.body.email,
-            password: req.body.password,
-        });
-        await adminCollection.add(adminData);
-
-        res.send({ success: true, message: 'Successfully registered!' });
+        const uid = req.body.uid; // Get the desired ID for the document from the req object
+        const docRef = adminCollection.doc(uid); // Create a new DocumentReference with the specified ID
+        await docRef.set(adminData); 
+        res.send({ success: true, message: 'Successfully registered!'});
     } else {
         res.send({ success: false, message: 'Account already exists!' });
     }
