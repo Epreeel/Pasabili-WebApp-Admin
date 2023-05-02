@@ -157,8 +157,8 @@ exports.registerAdmin = async (req, res) => {
         const adminData = {
             email: req.body.email,
             password: req.body.password,
-            fname: req.body.firstname,
-            lname: req.body.lastname,
+            firstname: req.body.firstname,
+            lastname: req.body.lastname,
             address: req.body.address,
             status: req.body.status,
             verified: req.body.verified,
