@@ -19,28 +19,27 @@ exports.getAllWithdrawalRequests = async (req, res) => {
   for (const withdrawDoc of withdrawsSnapshot.docs) {
     const withdrawData = withdrawDoc.data();
 
-    // Check if the user exists in itineraryCollection
-    const itineraryDoc = await itinerantCollection.doc(withdrawData.withdrawal_userid).get();
-    if (itineraryDoc.exists) {
-      const itineraryData = itineraryDoc.data();
-      const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
-      withdraw.userDetails = itineraryData;
-      withdraw.type = "Itinerant"
-      withdraws.push(withdraw);
-      continue;
+    if (withdrawData.withdrawal_itinid != null) {
+      const itineraryDoc = await itinerantCollection.doc(withdrawData.withdrawal_itinid).get();
+      if (itineraryDoc.exists) {
+        const itineraryData = itineraryDoc.data();
+        const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
+        withdraw.userDetails = itineraryData;
+        withdraw.type = "Itinerant"
+        withdraws.push(withdraw);
+        continue;
+      }
+    } else if (withdrawData.withdrawal_userid != null) {
+      const customerDoc = await customerCollection.doc(withdrawData.withdrawal_userid).get();
+      if (customerDoc.exists) {
+        const customerData = customerDoc.data();
+        const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
+        withdraw.userDetails = customerData;
+        withdraw.type = "Customer";
+        withdraws.push(withdraw);
+        continue;
+      }
     }
-
-    // Check if the user exists in customerCollection
-    const customerDoc = await customerCollection.doc(withdrawData.withdrawal_userid).get();
-    if (customerDoc.exists) {
-      const customerData = customerDoc.data();
-      const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
-      withdraw.userDetails = customerData;
-      withdraw.type = "Customer";
-      withdraws.push(withdraw);
-      continue;
-    }
-
   }
 
   // get all approved withdraws
@@ -53,29 +52,31 @@ exports.getAllWithdrawalRequests = async (req, res) => {
   for (const approvedWithdrawDoc of approvedWithdrawsSnapshot.docs) {
     const approvedWithdrawData = approvedWithdrawDoc.data();
 
-    // Check if the user exists in itineraryCollection
-    const itineraryDoc = await itinerantCollection.doc(approvedWithdrawData.withdrawal_userid).get();
-    if (itineraryDoc.exists) {
-      const itineraryData = itineraryDoc.data();
-      const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
-      approvedWithdraw.userDetails = itineraryData;
-      approvedWithdraw.type = "Itinerant"
-      approvedWithdraws.push(approvedWithdraw);
-      continue;
+    if (approvedWithdrawData.withdrawal_itinid != null) {
+      const itineraryDoc = await itinerantCollection.doc(approvedWithdrawData.withdrawal_itinid).get();
+      if (itineraryDoc.exists) {
+        const itineraryData = itineraryDoc.data();
+        const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
+        approvedWithdraw.userDetails = itineraryData;
+        approvedWithdraw.type = "Itinerant"
+        approvedWithdraws.push(approvedWithdraw);
+        continue;
+      }
+
+    } else if (approvedWithdrawData.withdrawal_userid != null) {
+      const customerDoc = await customerCollection.doc(approvedWithdrawData.withdrawal_userid).get();
+      if (customerDoc.exists) {
+        const customerData = customerDoc.data();
+        const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
+        approvedWithdraw.userDetails = customerData;
+        approvedWithdraw.type = "Customer";
+        approvedWithdraws.push(approvedWithdraw);
+        continue;
+      }
     }
 
-    // Check if the user exists in customerCollection
-    const customerDoc = await customerCollection.doc(approvedWithdrawData.withdrawal_userid).get();
-    if (customerDoc.exists) {
-      const customerData = customerDoc.data();
-      const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
-      approvedWithdraw.userDetails = customerData;
-      approvedWithdraw.type = "Customer";
-      approvedWithdraws.push(approvedWithdraw);
-      continue;
-    }
+
   }
-
 
   res.send({ success: true, data: { withdraws, approvedWithdraws } });
 };
