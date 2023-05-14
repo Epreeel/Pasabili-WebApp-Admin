@@ -9,7 +9,10 @@ import {
     IconButton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import Firebase from '../../helpers/Firebase';
 import { Avatar } from "@mui/material";
+
+const storage = Firebase.storage();
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     "& .MuiDialogContent-root": {
@@ -65,8 +68,8 @@ export default function ViewUserVerificationModal(props) {
                             <span className="text-black text-uppercase small">Image: </span>
                         </div>
                         <div className="col text-start">
-                            {props.data[4] !== "" && props.data[4] !== null ?
-                                <img src={props.data[4]} 
+                            {props.data[5] !== "" && props.data[5] !== null ?
+                                <img src={props.data[5]} 
                                 style={{height: 200, margin:"auto",alignSelf:"center",alignContent:"center",justifyContent:"center"}}
                                 alt="Image" /> :
                                 <span className="text-black fs-6 fw-bold">NONE</span>

@@ -9,12 +9,13 @@ const verificationCollection = db.collection('Verification');
 const customerCollection = db.collection('Users');
 const itinerantCollection = db.collection('Itinerants');
 exports.getAllVerifications = async (req, res) => {
-  const verificationsSnapshot = await verificationCollection.orderBy('createdAt', 'desc').get();
+  const verificationsSnapshot = await verificationCollection.orderBy('id_expirationDate', 'desc').get();
   const verifications = [];
 
   // Loop through each verification and get the customer details
   for (const verificationDoc of verificationsSnapshot.docs) {
     const verificationData = verificationDoc.data();
+  
 
     if (verificationData.custId) {
       const customerDoc = await customerCollection.doc(verificationData.custId).get();
@@ -36,7 +37,7 @@ exports.getAllVerifications = async (req, res) => {
    
   }
 
-
+  console.log(verifications)
   res.send({ success: true, data: { verifications } });
 };
 

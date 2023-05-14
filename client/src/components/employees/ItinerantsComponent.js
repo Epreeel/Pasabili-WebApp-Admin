@@ -27,6 +27,7 @@ const theme = createTheme({
 
 const ItinerantsComponent = () => {
   const { queryResult } = useEmployeePageContext();
+  console.log(queryResult);
   const itinerants = queryResult.data.data.itinerants;
   const [data, setData] = useState([]);
   const [openViewModal, setOpenViewModal] = useState(false);

@@ -50,7 +50,6 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function VerifyCustomerModal(props) {
-  console.log(props);
   const { refetch: customerRefetch } = useUserVerificationPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
@@ -64,7 +63,7 @@ export default function VerifyCustomerModal(props) {
   const handleFormSubmit = async () => {
     setLoading(true);
     const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/verification/verify`, {
-      [props.data[2] === 'Itinerant' ? 'itinId' : 'custId']: props.data[5],
+      [props.data[3] === 'Itinerant' ? 'itinId' : 'custId']: props.data[6],
       password: values.password,
       accessToken: Cookies.get("admin_id")
     })

@@ -35,15 +35,12 @@ const UserVerificationComponent = () => {
     useEffect(() => {
         var temp = [];
         verifications && verifications.map((item) => {
-            const timestamp = Firebase.firestore.Timestamp.fromMillis(
-                item.createdAt._seconds * 1000 +   item.createdAt._nanoseconds / 1000000
-            );
-            const createdAt = timestamp.toDate();
             temp.push([ 
             item.customerDetails.firstname + ' ' + item.customerDetails.lastname && item.customerDetails.firstname + ' ' + item.customerDetails.lastname,
-            item.introduction,
+            item.id_number,
+            item.id_type,
             item.custId && item.custId != null ? 'Customer' : 'Itinerant',
-            item.createdAt && moment(createdAt).format("MMMM DD, YYYY"),
+            item.id_expirationDate,
             item.image,
             item.custId ? item.custId : item.itinId
             ]);
@@ -71,8 +68,16 @@ const UserVerificationComponent = () => {
             }
         },
         {
-            name: "Introduction",
-            label: "Introduction",
+            name: "ID Number",
+            label: "ID Number",
+            options: {
+                filter: false,
+                sort: false
+            }
+        },
+        {
+            name: "ID Type",
+            label: "ID Type",
             options: {
                 filter: false,
                 sort: false
@@ -89,8 +94,8 @@ const UserVerificationComponent = () => {
 
 
         {
-            name: "Date Added",
-            label: "Date Added",
+            name: "Expiration Date",
+            label: "Expiration Date",
             options: {
                 filter: true,
                 sort: true
