@@ -8,6 +8,7 @@ const db = admin.firestore();
 const withdrawCollection = db.collection('WithdrawalRequests');
 const customerCollection = db.collection('Users');
 const itinerantCollection = db.collection('Itinerants');
+const walletCollection = db.collection('Wallet');
 exports.getAllWithdrawalRequests = async (req, res) => {
   // get all pending withdraws
   const withdrawsSnapshot = await withdrawCollection
@@ -91,9 +92,23 @@ exports.approveWithdrawalRequest = async (req, res) => {
     var originalText = bytes.toString(C.enc.Utf8);
 
     try {
-
+    
       if (originalText === req.body.password) {
         const ref = withdrawCollection.doc(req.body.withdrawal_request_id);
+        if(req.body.withdrawal_userid) {
+          const walletRef = walletCollection.doc(req.body.withdrawal_userid);
+          const walletSnapshot = await walletRef.get();
+          const currentBalance = walletSnapshot.data().wal_balance;
+
+          if (currentBalance >= req.body.withdraw) {
+            const updatedBalance = currentBalance - req.body.withdraw;
+            await walletRef.update({ wal_balance: updatedBalance });
+            await ref.update({ withdrawal_status: 2 });
+            res.send({ success: true, message: `Successfully approved.` });
+          } else {
+            res.send({ success: false, message: `Insufficient balance for withdrawal.` });
+          }
+        }
         await ref.update({ withdrawal_status: 2 });
         res.send({ success: true, message: `Successfully approved.` });
       } else {
