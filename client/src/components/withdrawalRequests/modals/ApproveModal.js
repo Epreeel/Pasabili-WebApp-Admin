@@ -65,7 +65,7 @@ export default function ApproveModal(props) {
     setLoading(true);
     const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/withdrawalRequest/approve`, {
       withdrawal_request_id : props.data[0],
-      [props.data[4] === 'Itinerant' ? 'withdrawal_itinId' : 'withdrawal_userid']: props.data[7],
+      [props.data[4] === 'Itinerant' ? 'withdrawal_itinid' : 'withdrawal_userid']: props.data[7],
       withdraw: props.data[3]&&parseFloat(props.data[3].replace(/\u20B1/g, '')),
       password: values.password,
       accessToken: Cookies.get("admin_id")
