@@ -109,8 +109,6 @@ exports.approveWithdrawalRequest = async (req, res) => {
             res.send({ success: false, message: `Insufficient balance for withdrawal.` });
           }
         }
-        await ref.update({ withdrawal_status: 2 });
-        res.send({ success: true, message: `Successfully approved.` });
       } else {
         res.send({ success: false, message: "Invalid password", data: null });
       }

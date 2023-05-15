@@ -53,6 +53,7 @@ const WithdrawalRequestComponent = () => {
                 item.type,
                 WITHDRAWAL_STATUS[item.withdrawal_status - 1],
                 item.withdrawal_timestampSent && moment(withdrawal_timestampSent).format("MMMM DD, YYYY"),
+                item.withdrawal_userid ? item.withdrawal_userid : item.withdrawal_itinid
             ]);
         })
         setData(temp);
