@@ -34,6 +34,7 @@ const WithdrawalRequestComponent = () => {
     const { queryResult } = useWithdrawalRequestPageContext();
 
     const withdraws = queryResult.data.data.withdraws;
+    console.log(withdraws);
     const [data, setData] = useState([]);
     const [openApproveModal, setApproveModal] = useState(false);
     const [openDiscardModal, setDiscardModal] = useState(false);
@@ -48,6 +49,7 @@ const WithdrawalRequestComponent = () => {
             temp.push([
                 item.withdrawal_request_id,
                 item.userDetails.firstname + ' ' + item.userDetails.lastname && item.userDetails.firstname + ' ' + item.userDetails.lastname,
+                " \u20B1" + item.balance,
                 item.withdrawal_gcashnum,
                 " \u20B1" + item.withdrawal_amount,
                 item.type,
@@ -85,6 +87,14 @@ const WithdrawalRequestComponent = () => {
         {
             name: "Name",
             label: "Name",
+            options: {
+                filter: true,
+                sort: true
+            }
+        },
+        {
+            name: "Current Wallet Balance",
+            label: "Current Wallet Balance",
             options: {
                 filter: true,
                 sort: true

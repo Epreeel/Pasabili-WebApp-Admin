@@ -50,7 +50,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function ApproveModal(props) {
-  console.log(props.data)
+console.log(props.data);
   const { refetch: customerRefetch } = useWithdrawalRequestPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
@@ -65,8 +65,8 @@ export default function ApproveModal(props) {
     setLoading(true);
     const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/withdrawalRequest/approve`, {
       withdrawal_request_id : props.data[0],
-      [props.data[4] === 'Itinerant' ? 'withdrawal_itinid' : 'withdrawal_userid']: props.data[7],
-      withdraw: props.data[3]&&parseFloat(props.data[3].replace(/\u20B1/g, '')),
+      [props.data[5] === 'Itinerant' ? 'withdrawal_itinid' : 'withdrawal_userid']: props.data[8],
+      withdraw: props.data[4]&&parseFloat(props.data[4].replace(/\u20B1/g, '')),
       password: values.password,
       accessToken: Cookies.get("admin_id")
     })

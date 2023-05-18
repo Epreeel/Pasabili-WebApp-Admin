@@ -16,6 +16,8 @@ import * as yup from 'yup'
 import { useWithdrawalRequestPageContext } from '../../../pages/WithdrawalRequestPage';
 import { useSnackbar } from "notistack";
 import { CircularProgress } from "@mui/material";
+import TextareaAutosize from '@mui/base/TextareaAutosize';
+
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   "& .MuiDialogContent-root": {
@@ -51,13 +53,16 @@ const BootstrapDialogTitle = (props) => {
 
 export default function DiscardModal(props) {
   const { refetch: customerRefetch } = useWithdrawalRequestPageContext();
-  const refetch =  customerRefetch;
+  const refetch = customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
   const [loading, setLoading] = React.useState(false);
   const passwordValidationSchema = yup.object().shape({
     password: yup
       .string()
       .required('Password is required'),
+    message: yup
+      .string()
+      .required('Message is required'),
   })
 
   const handleFormSubmit = async () => {
@@ -65,6 +70,7 @@ export default function DiscardModal(props) {
     const res = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/admin/withdrawalRequest/discard`, {
       withdrawal_request_id: props.data[0],
       password: values.password,
+      message: values.message,
       accessToken: Cookies.get("admin_id")
     })
     if (res) {
@@ -80,7 +86,7 @@ export default function DiscardModal(props) {
   }
 
   const { handleChange, handleSubmit, handleBlur, values, errors, isValid, touched, setFieldValue, setErrors } = useFormik({
-    initialValues: { password: "" },
+    initialValues: { password: "", message: "" },
     enableReinitialize: true,
     validationSchema: passwordValidationSchema,
     onSubmit: handleFormSubmit
@@ -123,6 +129,19 @@ export default function DiscardModal(props) {
                 fullWidth
                 variant="standard"
               />
+            </Grid>
+            <Grid item xs={12}>
+              <TextareaAutosize
+                value={values.message}
+                onChange={handleChange('message')}
+                onBlur={handleBlur('message')}
+                maxRows={10}
+                placeholder="Message"
+                style={{ width: '100%', height: 200, padding: 11 }}
+              />
+              {(errors.message && touched.message) &&
+                <p className="text-danger small ">{errors.message}</p>
+              }
             </Grid>
           </Grid>
         </Box>
