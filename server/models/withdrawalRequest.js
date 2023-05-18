@@ -10,7 +10,6 @@ class WithdrawalRequest {
         this.withdrawal_status = data.withdrawal_status;
         this.withdrawal_timestampSent = data.withdrawal_timestampSent;
         this.withdrawal_timestampRespond = data.withdrawal_timestampRespond;
-        this.withdrawal_message = data.withdrawal_message;
         this.balance = {};
         this.userDetails = {};
         this.type = {};
@@ -27,7 +26,6 @@ class WithdrawalRequest {
       this.withdrawal_status = snapshot.withdrawal_status.integerValue;
       this.withdrawal_timestampSent = snapshot.withdrawal_timestampSent.timeStampValue;
       this.withdrawal_timestampRespond = snapshot.withdrawal_timestampRespond.timeStampValue;
-      this.withdrawal_message = data.withdrawal_message;
       this.balance = {};
       this.userDetails = {};
       this.type = {};

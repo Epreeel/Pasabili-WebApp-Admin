@@ -11,6 +11,7 @@ class Verification {
         this.image = data.image;
         this.status = data.status;
         this.id_expirationDate = data.id_expirationDate;
+        this.message = data.message;
         this.customerDetails = {};
       }
     }
@@ -26,6 +27,7 @@ class Verification {
       this.status = snapshot.status.integerValue;
       this.image = snapshot.image.stringValue;
       this.id_expirationDate = snapshot.id_expirationDate.timeStampValue;
+      this.message = snapshot.message.stringValue;
       this.customerDetails = {};
     }
   

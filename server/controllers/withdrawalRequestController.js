@@ -111,7 +111,7 @@ exports.approveWithdrawalRequest = async (req, res) => {
 
       if (originalText === req.body.password) {
         const ref = withdrawCollection.doc(req.body.withdrawal_request_id);
-        console.log(req.body.withdrawal_itinid);
+    
         if (req.body.withdrawal_userid != null) {
           const walletQuery = await walletCollection
             .where('cust_id', '==', req.body.withdrawal_userid)
@@ -171,7 +171,6 @@ exports.discardWithdrawalRequest = async (req, res) => {
       if (originalText === req.body.password) {
         const ref = withdrawCollection.doc(req.body.withdrawal_request_id);
         await ref.update({ withdrawal_status: 3 });
-        await ref.set({withdrawal_message: req.body.message},{merge:true})
         res.send({ success: true, message: `Successfully discarded.` });
       } else {
         res.send({ success: false, message: "Invalid password", data: null });

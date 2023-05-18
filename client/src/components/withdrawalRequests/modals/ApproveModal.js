@@ -50,7 +50,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function ApproveModal(props) {
-console.log(props.data);
+
   const { refetch: customerRefetch } = useWithdrawalRequestPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();

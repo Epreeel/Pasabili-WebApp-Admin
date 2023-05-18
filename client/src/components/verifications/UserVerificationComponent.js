@@ -6,6 +6,7 @@ import { ButtonGroup } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import ViewUserVerificationModal from './modals/ViewUserVerificationModal';
 import VerifyCustomerModal from './modals/VerifyCustomerModal';
+import DenyCustomerModal from './modals/DenyCustomerModal';
 import Firebase from '../helpers/Firebase';
 
 const theme = createTheme({
@@ -31,6 +32,7 @@ const UserVerificationComponent = () => {
     const [data, setData] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openDeleteModal, setDeleteModal] = useState(false);
+    const [openDiscardModal, setDiscardModal] = useState(false);
     const [rowData, setRowData] = useState([]);
     useEffect(() => {
         var temp = [];
@@ -42,7 +44,9 @@ const UserVerificationComponent = () => {
             item.custId && item.custId != null ? 'Customer' : 'Itinerant',
             item.id_expirationDate,
             item.image,
-            item.custId ? item.custId : item.itinId
+            item.custId ? item.custId : item.itinId,
+            item.customerDetails.email
+        
             ]);
         })
         setData(temp);
@@ -55,6 +59,11 @@ const UserVerificationComponent = () => {
     const handleDeleteModal = (e, rowData) => {
         e.stopPropagation();
         setDeleteModal(true)
+        setRowData(rowData);
+    }
+    const handleDiscardModal = (e, rowData) => {
+        e.stopPropagation();
+        setDiscardModal(true)
         setRowData(rowData);
     }
 
@@ -112,6 +121,16 @@ const UserVerificationComponent = () => {
             }
         },
         {
+            name: "Email",
+            label: "Email",
+            options: {
+                filter: false,
+                sort: false,
+                display: false,
+                viewColumns: false,
+            }
+        },
+        {
             name: "Actions",
             label: "Actions",
             options: {
@@ -121,7 +140,8 @@ const UserVerificationComponent = () => {
                     return (
                         <ButtonGroup>
                             <button onClick={() => handleOpenViewModal(tableMeta.rowData)} className="btn btn-primary mx-1"><i className="fa fa-info-circle" aria-hidden="true"></i></button>
-                            <button onClick={(e) => handleDeleteModal(e, tableMeta.rowData)} className= "btn btn-success"><i className= "fa fa-check" aria-hidden="true"></i></button>
+                            <button onClick={(e) => handleDeleteModal(e, tableMeta.rowData)} className= "btn btn-success mx-1"><i className= "fa fa-check" aria-hidden="true"></i></button>
+                            <button onClick={(e) => handleDiscardModal(e, tableMeta.rowData)} className="btn btn-danger"><i className="fa fa-trash" aria-hidden="true"></i></button>
                         </ButtonGroup>
                     )
                 }
@@ -142,7 +162,8 @@ const UserVerificationComponent = () => {
     return (
         <div>
             <ViewUserVerificationModal data={rowData} title=" View Customer Document" openModal={openViewModal} setOpenModal={setOpenViewModal} handleCloseModal={() => setOpenViewModal(false)} />
-            <VerifyCustomerModal data={rowData} title="Verify Customer" module={"customers"} openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
+            <VerifyCustomerModal data={rowData} title="Verify Customer" openDeleteModal={openDeleteModal} setDeleteModal={setDeleteModal} />
+            <DenyCustomerModal data={rowData} title="Reject Customer" openDiscardModal={openDiscardModal} setDiscardModal={setDiscardModal} />
             <ThemeProvider theme={theme}>
                 <MUIDataTable
                     title={"Verification List"}
