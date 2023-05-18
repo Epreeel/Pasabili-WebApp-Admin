@@ -23,20 +23,36 @@ exports.getAllWithdrawalRequests = async (req, res) => {
     if (withdrawData.withdrawal_itinid != null) {
       const itineraryDoc = await itinerantCollection.doc(withdrawData.withdrawal_itinid).get();
       if (itineraryDoc.exists) {
+        const walletQuery = await walletCollection
+        .where('cust_id', '==', withdrawData.withdrawal_itinid)
+        .limit(1)
+        .get();
+        const doc = walletQuery.docs[0];
+        const walletData = doc.data()
+        const currentBalance = walletData.wal_balance;
         const itineraryData = itineraryDoc.data();
         const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
         withdraw.userDetails = itineraryData;
-        withdraw.type = "Itinerant"
+        withdraw.type = "Itinerant";
+        withdraw.balance = currentBalance;
         withdraws.push(withdraw);
         continue;
       }
     } else if (withdrawData.withdrawal_userid != null) {
       const customerDoc = await customerCollection.doc(withdrawData.withdrawal_userid).get();
       if (customerDoc.exists) {
+        const walletQuery = await walletCollection
+        .where('cust_id', '==', withdrawData.withdrawal_userid)
+        .limit(1)
+        .get();
+        const doc = walletQuery.docs[0];
+        const walletData = doc.data()
+        const currentBalance = walletData.wal_balance;
         const customerData = customerDoc.data();
         const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
         withdraw.userDetails = customerData;
         withdraw.type = "Customer";
+        withdraw.balance = currentBalance;
         withdraws.push(withdraw);
         continue;
       }
@@ -155,6 +171,7 @@ exports.discardWithdrawalRequest = async (req, res) => {
       if (originalText === req.body.password) {
         const ref = withdrawCollection.doc(req.body.withdrawal_request_id);
         await ref.update({ withdrawal_status: 3 });
+        await ref.set({withdrawal_message: req.body.message},{merge:true})
         res.send({ success: true, message: `Successfully discarded.` });
       } else {
         res.send({ success: false, message: "Invalid password", data: null });
