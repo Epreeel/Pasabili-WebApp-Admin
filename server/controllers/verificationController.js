@@ -11,7 +11,7 @@ const verificationCollection = db.collection('Verification');
 const customerCollection = db.collection('Users');
 const itinerantCollection = db.collection('Itinerants');
 exports.getAllVerifications = async (req, res) => {
-  const verificationsSnapshot = await verificationCollection.orderBy('id_expirationDate', 'desc').get();
+  const verificationsSnapshot = await verificationCollection.where('status', '==', 2).orderBy('id_expirationDate', 'desc').get();
   const verifications = [];
 
   // Loop through each verification and get the customer details
@@ -62,6 +62,9 @@ exports.verifyCustomer = async (req, res) => {
           const uid = user.id;
           const userRef = customerCollection.doc(uid);
           await userRef.update({ verified: true });
+          const verificationId = req.body.uid;
+          const docRef = verificationCollection.doc(verificationId);
+          await docRef.update({status: 3})
 
           await sendVerificationEmail(req.body.email, userType);
           res.send({ success: true, message: `Successfully verify ${userType}.` });
@@ -76,6 +79,9 @@ exports.verifyCustomer = async (req, res) => {
             const uid = user.id;
             const userRef = itinerantCollection.doc(uid);
             await userRef.update({ verified: true });
+            const verificationId = req.body.uid;
+            const docRef = verificationCollection.doc(verificationId);
+            await docRef.update({status: 3})
 
             await sendVerificationEmail(req.body.email, userType);
             res.send({ success: true, message: `Successfully verify ${userType}.` });
@@ -110,8 +116,12 @@ exports.denyCustomer = async (req, res) => {
           const userType = "Customer";
           const uid = user.id;
           const userRef = customerCollection.doc(uid);
-          console.log(userRef.email);
+        
           await userRef.set({ message: req.body.message }, {merge:true});
+          const verificationId = req.body.uid;
+          const docRef = verificationCollection.doc(verificationId);
+          await docRef.update({status: 1})
+
 
           await sendDenyVerificationEmail(req.body.email, userType, req.body.message);
           res.send({ success: true, message: `Successfully verify ${userType}.` });
@@ -126,6 +136,8 @@ exports.denyCustomer = async (req, res) => {
             const uid = user.id;
             const userRef = itinerantCollection.doc(uid);
             await userRef.set({ message: req.body.message }, {merge:true});
+            const docRef = verificationCollection.doc(verificationId);
+            await docRef.update({status: 1})
 
             await sendDenyVerificationEmail(req.body.email, userType, req.body.message);
             res.send({ success: true, message: `Successfully verify ${userType}.` });

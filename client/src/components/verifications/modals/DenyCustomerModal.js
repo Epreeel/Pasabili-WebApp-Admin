@@ -51,6 +51,7 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function DenyCustomerModal(props) {
+  console.log(props.data);
   const { refetch: customerRefetch } = useUserVerificationPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
@@ -71,6 +72,7 @@ export default function DenyCustomerModal(props) {
       email: props.data[7],
       password: values.password,
       message: values.message,
+      uid:props.data[6],
       accessToken: Cookies.get("admin_id")
     })
     if (res) {

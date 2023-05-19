@@ -50,7 +50,6 @@ const BootstrapDialogTitle = (props) => {
 };
 
 export default function VerifyCustomerModal(props) {
-  console.log(props.data)
   const { refetch: customerRefetch } = useUserVerificationPageContext();
   const refetch =  customerRefetch;
   const { enqueueSnackbar } = useSnackbar();
@@ -67,6 +66,7 @@ export default function VerifyCustomerModal(props) {
       [props.data[3] === 'Itinerant' ? 'itinId' : 'custId']: props.data[6],
       email: props.data[7],
       password: values.password,
+      uid:props.data[6],
       accessToken: Cookies.get("admin_id")
     })
     if (res) {
