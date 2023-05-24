@@ -9,94 +9,109 @@ const withdrawCollection = db.collection('WithdrawalRequests');
 const customerCollection = db.collection('Users');
 const itinerantCollection = db.collection('Itinerants');
 const walletCollection = db.collection('Wallet');
+
 exports.getAllWithdrawalRequests = async (req, res) => {
-  // get all pending withdraws
-  const withdrawsSnapshot = await withdrawCollection
-    .where('withdrawal_status', '==', 1)
-    .orderBy('withdrawal_timestampSent', 'desc').get();
-  const withdraws = [];
+  try {
+    const withdrawsSnapshot = await withdrawCollection
+      .where('withdrawal_status', '==', 1)
+      .orderBy('withdrawal_timestampSent', 'desc')
+      .get();
 
-  // Loop through each withdraw and get the user details
-  for (const withdrawDoc of withdrawsSnapshot.docs) {
-    const withdrawData = withdrawDoc.data();
+    const approvedWithdrawsSnapshot = await withdrawCollection
+      .where('withdrawal_status', '==', 2)
+      .orderBy('withdrawal_timestampSent', 'desc')
+      .get();
 
-    if (withdrawData.withdrawal_itinid != null) {
-      const itineraryDoc = await itinerantCollection.doc(withdrawData.withdrawal_itinid).get();
-      if (itineraryDoc.exists) {
-        const walletQuery = await walletCollection
-        .where('cust_id', '==', withdrawData.withdrawal_itinid)
-        .limit(1)
-        .get();
-        const doc = walletQuery.docs[0];
-        const walletData = doc.data()
-        const currentBalance = walletData.wal_balance;
-        const itineraryData = itineraryDoc.data();
-        const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
-        withdraw.userDetails = itineraryData;
-        withdraw.type = "Itinerant";
-        withdraw.balance = currentBalance;
-        withdraws.push(withdraw);
-        continue;
-      }
-    } else if (withdrawData.withdrawal_userid != null) {
-      const customerDoc = await customerCollection.doc(withdrawData.withdrawal_userid).get();
-      if (customerDoc.exists) {
-        const walletQuery = await walletCollection
-        .where('cust_id', '==', withdrawData.withdrawal_userid)
-        .limit(1)
-        .get();
-        const doc = walletQuery.docs[0];
-        const walletData = doc.data()
-        const currentBalance = walletData.wal_balance;
-        const customerData = customerDoc.data();
-        const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
-        withdraw.userDetails = customerData;
-        withdraw.type = "Customer";
-        withdraw.balance = currentBalance;
-        withdraws.push(withdraw);
-        continue;
-      }
-    }
-  }
+    const withdrawDocs = withdrawsSnapshot.docs;
+    const approvedWithdrawDocs = approvedWithdrawsSnapshot.docs;
 
-  // get all approved withdraws
-  const approvedWithdrawsSnapshot = await withdrawCollection
-    .where('withdrawal_status', '==', 2)
-    .orderBy('withdrawal_timestampSent', 'desc').get();
-  const approvedWithdraws = [];
+    const withdrawPromises = [];
+    const approvedWithdrawPromises = [];
 
-  // Loop through each withdraw and get the user details
-  for (const approvedWithdrawDoc of approvedWithdrawsSnapshot.docs) {
-    const approvedWithdrawData = approvedWithdrawDoc.data();
+    // Retrieve user details and wallet balance for pending withdraws
+    for (const withdrawDoc of withdrawDocs) {
+      const withdrawData = withdrawDoc.data();
 
-    if (approvedWithdrawData.withdrawal_itinid != null) {
-      const itineraryDoc = await itinerantCollection.doc(approvedWithdrawData.withdrawal_itinid).get();
-      if (itineraryDoc.exists) {
-        const itineraryData = itineraryDoc.data();
-        const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
-        approvedWithdraw.userDetails = itineraryData;
-        approvedWithdraw.type = "Itinerant"
-        approvedWithdraws.push(approvedWithdraw);
-        continue;
-      }
-
-    } else if (approvedWithdrawData.withdrawal_userid != null) {
-      const customerDoc = await customerCollection.doc(approvedWithdrawData.withdrawal_userid).get();
-      if (customerDoc.exists) {
-        const customerData = customerDoc.data();
-        const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
-        approvedWithdraw.userDetails = customerData;
-        approvedWithdraw.type = "Customer";
-        approvedWithdraws.push(approvedWithdraw);
-        continue;
+      if (withdrawData.withdrawal_itinid != null) {
+        const itineraryPromise = itinerantCollection.doc(withdrawData.withdrawal_itinid).get();
+        const walletPromise = walletCollection
+          .where('itin_id', '==', withdrawData.withdrawal_itinid)
+          .limit(1)
+          .get();
+        withdrawPromises.push(Promise.all([itineraryPromise, walletPromise]));
+      } else if (withdrawData.withdrawal_userid != null) {
+        const customerPromise = customerCollection.doc(withdrawData.withdrawal_userid).get();
+        const walletPromise = walletCollection
+          .where('cust_id', '==', withdrawData.withdrawal_userid)
+          .limit(1)
+          .get();
+        withdrawPromises.push(Promise.all([customerPromise, walletPromise]));
       }
     }
 
+    // Retrieve user details for approved withdraws
+    for (const approvedWithdrawDoc of approvedWithdrawDocs) {
+      const approvedWithdrawData = approvedWithdrawDoc.data();
 
+      if (approvedWithdrawData.withdrawal_itinid != null) {
+        const itineraryPromise = itinerantCollection.doc(approvedWithdrawData.withdrawal_itinid).get();
+        approvedWithdrawPromises.push(itineraryPromise);
+      } else if (approvedWithdrawData.withdrawal_userid != null) {
+        const customerPromise = customerCollection.doc(approvedWithdrawData.withdrawal_userid).get();
+        approvedWithdrawPromises.push(customerPromise);
+      }
+    }
+
+    const withdrawResults = await Promise.all(withdrawPromises);
+    const approvedWithdrawSnapshots = await Promise.all(approvedWithdrawPromises);
+
+    const withdraws = [];
+    const approvedWithdraws = [];
+
+    // Process pending withdraws and user details
+    for (let i = 0; i < withdrawResults.length; i++) {
+      const withdrawDoc = withdrawDocs[i];
+      const withdrawData = withdrawDoc.data();
+      const [userDetailsSnapshot, walletSnapshot] = withdrawResults[i];
+
+      if (userDetailsSnapshot.exists) {
+        const userDetails = userDetailsSnapshot.data();
+        let currentBalance = null;
+
+        if (walletSnapshot && !walletSnapshot.empty) {
+          const walletData = walletSnapshot.docs[0].data();
+          currentBalance = walletData.wal_balance;
+        }
+
+        if (currentBalance !== null) {
+          const withdraw = new WithdrawalRequest(withdrawData, withdrawDoc.id);
+          withdraw.userDetails = userDetails;
+          withdraw.type = withdrawData.withdrawal_itinid != null ? 'Itinerant' : 'Customer';
+          withdraw.balance = currentBalance;
+          withdraws.push(withdraw);
+        }
+      }
+    }
+
+    // Process approved withdraws and user details
+    for (let i = 0; i < approvedWithdrawSnapshots.length; i++) {
+      const approvedWithdrawDoc = approvedWithdrawDocs[i];
+      const approvedWithdrawData = approvedWithdrawDoc.data();
+      const userDetails = approvedWithdrawSnapshots[i].data();
+
+      const approvedWithdraw = new WithdrawalRequest(approvedWithdrawData, approvedWithdrawDoc.id);
+      approvedWithdraw.userDetails = userDetails;
+      approvedWithdraw.type = approvedWithdrawData.withdrawal_itinid != null ? 'Itinerant' : 'Customer';
+      approvedWithdraws.push(approvedWithdraw);
+    }
+    console.log(approvedWithdraws);
+    res.send({ success: true, data: { withdraws, approvedWithdraws } });
+  } catch (error) {
+    console.error('Error retrieving withdrawal requests:', error);
+    res.status(500).send({ success: false, error: 'Internal server error' });
   }
-
-  res.send({ success: true, data: { withdraws, approvedWithdraws } });
 };
+
 
 exports.approveWithdrawalRequest = async (req, res) => {
   jwt.verify(req.body.accessToken, process.env.ACCESS_TOKEN_SECRET, async (err, decoded) => {

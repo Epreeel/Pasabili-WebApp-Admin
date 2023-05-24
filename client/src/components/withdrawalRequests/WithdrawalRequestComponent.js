@@ -32,9 +32,7 @@ const theme = createTheme({
 
 const WithdrawalRequestComponent = () => {
     const { queryResult } = useWithdrawalRequestPageContext();
-
     const withdraws = queryResult.data.data.withdraws;
-    console.log(withdraws);
     const [data, setData] = useState([]);
     const [openApproveModal, setApproveModal] = useState(false);
     const [openDiscardModal, setDiscardModal] = useState(false);

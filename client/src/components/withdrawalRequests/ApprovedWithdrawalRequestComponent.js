@@ -25,6 +25,7 @@ const theme = createTheme({
 const ApprovedWithdrawalRequestComponent = () => {
     const { queryResult } = useWithdrawalRequestPageContext();
     const withdraws = queryResult.data.data.approvedWithdraws;
+    console.log(withdraws);
     const [data, setData] = useState([]);
     const [openViewModal, setOpenViewModal] = useState(false);
     const [openDeleteModal, setDeleteModal] = useState(false);
@@ -33,16 +34,21 @@ const ApprovedWithdrawalRequestComponent = () => {
         var temp = [];
         withdraws && withdraws.map((item) => {
             const timestamp = Firebase.firestore.Timestamp.fromMillis(
-                item.withdrawal_timestampSent._seconds * 1000 +   item.withdrawal_timestampSent._nanoseconds / 1000000
+                item.withdrawal_timestampSent._seconds * 1000 + item.withdrawal_timestampSent._nanoseconds / 1000000
             );
             const withdrawal_timestampSent = timestamp.toDate();
-            temp.push([ 
-            item.userDetails.firstname + ' ' + item.userDetails.lastname && item.userDetails.firstname + ' ' + item.userDetails.lastname,
-            item.withdrawal_gcashnum,
-            " \u20B1" + item.withdrawal_amount,
-            item.type,
-            WITHDRAWAL_STATUS[item.withdrawal_status - 1],
-            item.withdrawal_timestampSent && moment(withdrawal_timestampSent).format("MMMM DD, YYYY"),
+            const userDetails =
+                item.userDetails && item.userDetails.firstname && item.userDetails.lastname
+                    ? item.userDetails.firstname + ' ' + item.userDetails.lastname
+                    : '';
+
+            temp.push([
+                userDetails,
+                item.withdrawal_gcashnum,
+                " \u20B1" + item.withdrawal_amount,
+                item.type,
+                WITHDRAWAL_STATUS[item.withdrawal_status - 1],
+                item.withdrawal_timestampSent && moment(withdrawal_timestampSent).format("MMMM DD, YYYY"),
             ]);
         })
         setData(temp);
@@ -110,7 +116,7 @@ const ApprovedWithdrawalRequestComponent = () => {
                 sort: true
             }
         },
-    
+
     ];
 
 
